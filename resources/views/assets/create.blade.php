@@ -5,7 +5,7 @@
             Tambah Aset ICT
         </h1>
 
-        {{-- ERROR MESSAGE --}}
+        {{-- PAPAR ERROR --}}
         @if ($errors->any())
             <div class="bg-red-100 text-red-700 px-4 py-3 rounded mb-4">
                 <ul class="list-disc ms-6 text-sm">
@@ -16,104 +16,164 @@
             </div>
         @endif
 
-        <form action="{{ route('ict.assets.store') }}" method="POST">
+        <form id="formCreateAset" action="{{ route('ict.assets.store') }}" method="POST">
             @csrf
 
-            {{-- ===================================================== --}}
-            {{--               KUMPULAN 1: MAKLUMAT ASET               --}}
-            {{-- ===================================================== --}}
+            {{-- ================================================================= --}}
+            {{--                        MAKLUMAT ASET ICT                        --}}
+            {{-- ================================================================= --}}
             <div class="bg-white p-6 rounded-xl shadow mb-8">
                 <h2 class="font-bold text-lg mb-4">Maklumat Aset ICT</h2>
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
 
-                    {{-- No Peralatan --}}
-                    <div>
-                        <label class="font-semibold text-sm">No. Peralatan ICT *</label>
-                        <input type="text" name="no_peralatan" required class="mt-1 w-full border rounded px-3 py-2"
-                               value="{{ old('no_peralatan') }}">
+                    {{-- No Siri Aset (Tidak Wajib) --}}
+                    <div class="md:col-span-2">
+                        <label class="font-semibold text-sm">No Siri Aset (Tidak Wajib)</label>
+                        <input type="text" name="no_siri_aset"
+                            class="mt-1 w-full border rounded px-3 py-2"
+                            value="{{ old('no_siri_aset') }}">
                     </div>
 
-                    {{-- Nama Aset --}}
+                    {{-- Kategori --}}
                     <div>
-                        <label class="font-semibold text-sm">Nama Aset *</label>
-                        <input type="text" name="nama" required class="mt-1 w-full border rounded px-3 py-2"
-                               value="{{ old('nama') }}">
+                        <label class="font-semibold text-sm">Kategori *</label>
+                        <select name="kategori" required class="mt-1 w-full border rounded px-3 py-2">
+                            <option value="">-- Pilih --</option>
+                            <option>Komputer Desktop</option>
+                            <option>Komputer Riba / Laptop</option>
+                            <option>Monitor</option>
+                            <option>Printer</option>
+                            <option>Scanner</option>
+                            <option>Tablet</option>
+                            <option>Telefon IP</option>
+                            <option>UPS</option>
+                            <option>Switch</option>
+                            <option>Router</option>
+                            <option>Server</option>
+                            <option>External Storage</option>
+                            <option>Projector</option>
+                            <option>CCTV Camera</option>
+                            <option>Access Point / WiFi</option>
+                            <option>Fax Machine</option>
+                            <option>Smart TV</option>
+                        </select>
+                    </div>
+
+                    {{-- No Siri --}}
+                    <div>
+                        <label class="font-semibold text-sm">No Siri *</label>
+                        <input type="text" name="no_siri" required
+                            class="mt-1 w-full border rounded px-3 py-2"
+                            value="{{ old('no_siri') }}">
+                    </div>
+
+                    {{-- Sub Kategori --}}
+                    <div>
+                        <label class="font-semibold text-sm">Sub Kategori</label>
+                        <input type="text" name="sub_kategori"
+                            class="mt-1 w-full border rounded px-3 py-2"
+                            value="{{ old('sub_kategori') }}">
+                    </div>
+
+                    {{-- No Siri Sub --}}
+                    <div>
+                        <label class="font-semibold text-sm">No Siri Sub</label>
+                        <input type="text" name="no_siri_sub"
+                            class="mt-1 w-full border rounded px-3 py-2"
+                            value="{{ old('no_siri_sub') }}">
                     </div>
 
                     {{-- Jenama --}}
                     <div>
-                        <label class="font-semibold text-sm">Jenama</label>
-                        <input type="text" name="jenama" class="mt-1 w-full border rounded px-3 py-2"
-                               value="{{ old('jenama') }}">
+                        <label class="font-semibold text-sm">Jenama *</label>
+                        <select name="jenama" required class="mt-1 w-full border rounded px-3 py-2">
+                            <option value="">-- Pilih --</option>
+
+                            {{-- Laptop / Desktop --}}
+                            <option>HP</option>
+                            <option>Dell</option>
+                            <option>Lenovo</option>
+                            <option>Acer</option>
+                            <option>Asus</option>
+                            <option>Apple</option>
+                            <option>Microsoft Surface</option>
+
+                            {{-- Printer --}}
+                            <option>Brother</option>
+                            <option>Canon</option>
+                            <option>Epson</option>
+                            <option>FujiFilm</option>
+
+                            {{-- Network --}}
+                            <option>Cisco</option>
+                            <option>TP-Link</option>
+                            <option>D-Link</option>
+                            <option>Mikrotik</option>
+                            <option>Aruba</option>
+
+                            {{-- UPS --}}
+                            <option>APC</option>
+                            <option>Eaton</option>
+
+                            {{-- CCTV --}}
+                            <option>Hikvision</option>
+                            <option>Dahua</option>
+                        </select>
                     </div>
 
                     {{-- Model --}}
                     <div>
                         <label class="font-semibold text-sm">Model</label>
-                        <input type="text" name="model" class="mt-1 w-full border rounded px-3 py-2"
-                               value="{{ old('model') }}">
-                    </div>
-
-                    {{-- Kategori ICT --}}
-                    <div>
-                        <label class="font-semibold text-sm">Kategori ICT *</label>
-                        <select name="kategori" class="mt-1 w-full border rounded px-3 py-2">
-                            <option value="">-- Pilih --</option>
-                            <option value="Komputer Desktop">Komputer Desktop</option>
-                            <option value="Komputer Riba / Laptop">Komputer Riba / Laptop</option>
-                            <option value="All-In-One PC">All-In-One PC</option>
-                            <option value="Monitor">Monitor</option>
-                            <option value="Printer">Printer</option>
-                            <option value="Scanner">Scanner</option>
-                            <option value="UPS">UPS</option>
-                            <option value="Router">Router</option>
-                            <option value="Switch">Switch</option>
-                            <option value="Projector">Projector</option>
-                            <option value="Tablet">Tablet</option>
-                            <option value="Telefon IP">Telefon IP</option>
-                            <option value="Lain-lain">Lain-lain</option>
-                        </select>
-                    </div>
-
-                    {{-- Tahun Perolehan --}}
-                    <div>
-                        <label class="font-semibold text-sm">Tahun Perolehan</label>
-                        <input type="number" name="tahun_perolehan" class="mt-1 w-full border rounded px-3 py-2"
-                               min="2000" max="{{ date('Y') }}" value="{{ old('tahun_perolehan') }}">
-                    </div>
-
-                    {{-- Harga --}}
-                    <div>
-                        <label class="font-semibold text-sm">Harga (RM)</label>
-                        <input type="number" step="0.01" name="harga" class="mt-1 w-full border rounded px-3 py-2"
-                               value="{{ old('harga') }}">
+                        <input type="text" name="model"
+                            class="mt-1 w-full border rounded px-3 py-2"
+                            value="{{ old('model') }}">
                     </div>
 
                 </div>
             </div>
 
-
-            {{-- ===================================================== --}}
-            {{--           KUMPULAN 2: SUMBER & PEMBEKAL              --}}
-            {{-- ===================================================== --}}
+            {{-- ================================================================= --}}
+            {{--                        MAKLUMAT PEROLEHAN                        --}}
+            {{-- ================================================================= --}}
             <div class="bg-white p-6 rounded-xl shadow mb-8">
                 <h2 class="font-bold text-lg mb-4">Maklumat Perolehan</h2>
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+                    {{-- TARIKH PEROLEHAN: FULL DATE --}}
+                    <div>
+                        <label class="font-semibold text-sm">Tarikh Perolehan *</label>
+                        <input type="date" id="tarikh_perolehan" name="tarikh_perolehan" required
+                            class="mt-1 w-full border rounded px-3 py-2"
+                            value="{{ old('tarikh_perolehan') }}">
+                    </div>
+
+                    {{-- USIA ASET AUTO --}}
+                    <div>
+                        <label class="font-semibold text-sm">Usia Aset (Auto)</label>
+                        <input type="text" id="usia_aset" readonly
+                            class="mt-1 w-full bg-gray-100 border rounded px-3 py-2">
+                    </div>
+
+                    {{-- Harga --}}
+                    <div>
+                        <label class="font-semibold text-sm">Harga Perolehan (RM)</label>
+                        <input type="number" name="harga" step="0.01"
+                            class="mt-1 w-full border rounded px-3 py-2"
+                            value="{{ old('harga') }}">
+                    </div>
 
                     {{-- Sumber Perolehan --}}
                     <div>
                         <label class="font-semibold text-sm">Sumber Perolehan *</label>
                         <select name="sumber_perolehan" required class="mt-1 w-full border rounded px-3 py-2">
                             <option value="">-- Pilih --</option>
-                            <option value="Pejabat SUK Selangor">Pejabat SUK Selangor</option>
-                            <option value="Pejabat Tanah Galian Selangor">Pejabat Tanah Galian Selangor</option>
-                            <option value="Perolehan Jabatan">Perolehan Jabatan</option>
-                            <option value="Jabatan Ketua Pengarah Tanah dan Galian Persekutuan">
-                                JKPTG Persekutuan
-                            </option>
-                            <option value="Sumbangan">Sumbangan</option>
+                            <option>Pejabat SUK Selangor</option>
+                            <option>PPejabat Tanah Galian Selangor</option>
+                            <option>Perolehan Jabatan</option>
+                            <option>Jabatan Ketua Pengarah Tanah dan Galian Persekutuan</option>
+                            <option>Sumbangan</option>
                         </select>
                     </div>
 
@@ -121,26 +181,29 @@
                     <div>
                         <label class="font-semibold text-sm">Pembekal</label>
                         <select name="pembekal" class="mt-1 w-full border rounded px-3 py-2">
-                            <option value="">-- Pilih --</option>
-                            <option value="GLOBAL ELITE">GLOBAL ELITE</option>
-                            <option value="S.I.PROTECT">S.I.PROTECT</option>
-                            <option value="KONSORTIUM JAYA SDN. BHD">KONSORTIUM JAYA SDN. BHD</option>
-                            <option value="BSO TECHNOLOGIES SDN. BHD.">BSO TECHNOLOGIES SDN. BHD.</option>
-                            <option value="TELITI COMPUTERS SDN. BHD.">TELITI COMPUTERS SDN. BHD.</option>
-                            <option value="SINAR RKK">SINAR RKK</option>
-                            <option value="MAGECOM SOLUTION">MAGECOM SOLUTION</option>
-                            <option value="HAYNIK">HAYNIK</option>
-                            <option value="SUNDATA">SUNDATA</option>
+                            <option value="">-- Tiada --</option>
+                            <option>GLOBAL ELITE</option>
+                            <option>S.I.PROTECT</option>
+                            <option>KONSORTIUM JAYA SDN BHD</option>
+                            <option>BSO TECHNOLOGIES</option>
+                            <option>TELITI COMPUTERS SDN. BHD.</option>
+                            <option>SINAR RKK</option>
+                            <option>MAGECOM SOLUTION</option>
+                            <option>HAYNIK</option>
+                            <option>SUNDATA</option>
+                            <option>JRC PRO TECHNOLOGY</option>
+                            <option>KINRARA APLIKASI SDN BHD</option>
+                            <option>MHS RESOURCES SDN BHD</option>
+                            <option>TRI SYSTEM TECHNOLOGY</option>         
                         </select>
                     </div>
 
                 </div>
             </div>
 
-
-            {{-- ===================================================== --}}
-            {{--         KUMPULAN 3: PENEMPATAN & LOKASI              --}}
-            {{-- ===================================================== --}}
+            {{-- ================================================================= --}}
+            {{--                       MAKLUMAT PENEMPATAN                       --}}
+            {{-- ================================================================= --}}
             <div class="bg-white p-6 rounded-xl shadow mb-8">
                 <h2 class="font-bold text-lg mb-4">Maklumat Penempatan</h2>
 
@@ -148,92 +211,155 @@
 
                     {{-- Bahagian --}}
                     <div>
-                        <label class="font-semibold text-sm">Bahagian</label>
-                        <select name="bahagian" class="mt-1 w-full border rounded px-3 py-2">
+                        <label class="font-semibold text-sm">Lokasi / Bahagian</label>
+                        <select name="bahagian" id="bahagian"
+                            class="mt-1 w-full border rounded px-3 py-2">
+
                             <option value="">-- Pilih --</option>
-                            <option value="Pejabat Pegawai Daerah">Pejabat Pegawai Daerah</option>
-                            <option value="Unit Perundangan">Unit Perundangan</option>
-                            <option value="Unit Integriti dan Perlesenan">Unit Integriti & Perlesenan</option>
-                            <option value="Bahagian Khidmat Pengurusan">Bahagian Khidmat Pengurusan</option>
-                            <option value="Bahagian Pengurusan Tanah">Bahagian Pengurusan Tanah</option>
-                            <option value="Bahagian Pembangunan">Bahagian Pembangunan</option>
-                            <option value="Lain-lain">Lain-lain</option>
+                            <option>Pejabat Pegawai Daerah</option>
+                            <option>Unit Perundangan</option>
+                            <option>Unit Integriti dan Perlesenan</option>
+
+                            <option>Bahagian Khidmat Pengurusan</option>
+                            <option>Bahagian Pengurusan Tanah</option>
+                            <option>Bahagian Pembangunan</option>
+
+                            <option>Stor ICT</option>
+                            <option>Stor Dewan</option>
+                            <option>Stor LG</option>
+                            <option>Stor Bilik DDOC</option>
+                            <option>Bilik DDOC</option>
+                            <option>Bilik Gerakan</option>
+                            <option>Auditorium</option>
                         </select>
                     </div>
 
                     {{-- Unit --}}
                     <div>
                         <label class="font-semibold text-sm">Unit</label>
-                        <select name="unit" class="mt-1 w-full border rounded px-3 py-2">
-                            <option value="">-- Pilih --</option>
-                            <option value="Unit Pentadbiran Am">Unit Pentadbiran Am</option>
-                            <option value="Unit ICT">Unit ICT</option>
-                            <option value="Unit Sumber Manusia">Unit Sumber Manusia</option>
-                            <option value="Unit Kewangan">Unit Kewangan</option>
-                            <option value="Unit Aset & Stor">Unit Aset & Stor</option>
-                            <option value="Unit Bencana">Unit Bencana</option>
-                            <option value="Unit Majlis dan Keraian">Unit Majlis & Keraian</option>
-                            <option value="Unit Pelupusan Tanah">Unit Pelupusan Tanah</option>
-                            <option value="Unit Pembangunan Tanah">Unit Pembangunan Tanah</option>
-                            <option value="Unit Hasil">Unit Hasil</option>
-                            <option value="Unit Teknikal & Penguatkuasaan">Unit Teknikal & Penguatkuasaan</option>
-                            <option value="Unit Pendaftaran">Unit Pendaftaran</option>
-                            <option value="Unit Pindahmilik & Lelong">Unit Pindahmilik & Lelong</option>
-                            <option value="Unit Pembangunan Masyarakat">Unit Pembangunan Masyarakat</option>
-                            <option value="Unit Pembangunan Fizikal">Unit Pembangunan Fizikal</option>
-                        </select>
-                    </div>
-
-                    {{-- Lokasi Lain --}}
-                    <div>
-                        <label class="font-semibold text-sm">Lokasi Lain</label>
-                        <select name="lokasi_lain" class="mt-1 w-full border rounded px-3 py-2">
-                            <option value="">-- Pilih --</option>
-                            <option value="Stor ICT">Stor ICT</option>
-                            <option value="Stor Dewan">Stor Dewan</option>
-                            <option value="Stor LG">Stor LG</option>
-                            <option value="Stor Bilik DDOC">Stor Bilik DDOC</option>
-                            <option value="Bilik DDOC">Bilik DDOC</option>
-                            <option value="Bilik">Bilik</option>
-                            <option value="Gerakan">Gerakan</option>
-                            <option value="Auditorium">Auditorium</option>
+                        <select name="unit" id="unit"
+                            class="mt-1 w-full border rounded px-3 py-2" disabled>
+                            <option value="">-- Pilih Unit --</option>
                         </select>
                     </div>
 
                     {{-- Nama Pengguna --}}
                     <div>
                         <label class="font-semibold text-sm">Nama Pengguna</label>
-                        <input type="text" name="nama_pengguna" class="mt-1 w-full border rounded px-3 py-2"
-                               value="{{ old('nama_pengguna') }}">
+                        <input type="text" name="nama_pengguna"
+                            class="mt-1 w-full border rounded px-3 py-2"
+                            value="{{ old('nama_pengguna') }}">
                     </div>
 
+                    {{-- Tarikh Penempatan --}}
+                    <div>
+                        <label class="font-semibold text-sm">Tarikh Penempatan *</label>
+                        <input type="date" id="tarikh_penempatan" name="tarikh_penempatan" required
+                            class="mt-1 w-full border rounded px-3 py-2"
+                            value="{{ old('tarikh_penempatan') }}">
+                    </div>
                 </div>
             </div>
-
-
-            {{-- ===================================================== --}}
-            {{--                  KUMPULAN 4: CATATAN                  --}}
-            {{-- ===================================================== --}}
+                    </div>
+            {{-- ================================================================= --}}
+            {{--                            CATATAN                               --}}
+            {{-- ================================================================= --}}
             <div class="bg-white p-6 rounded-xl shadow mb-8">
                 <h2 class="font-bold text-lg mb-4">Catatan</h2>
-                <textarea name="catatan" class="w-full border rounded px-3 py-2" rows="3">{{ old('catatan') }}</textarea>
+
+                <textarea name="catatan" rows="3"
+                    class="w-full border rounded px-3 py-2">{{ old('catatan') }}</textarea>
             </div>
 
-
             {{-- BUTTON --}}
-            <div class="mt-8 flex space-x-3">
-                <button class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">Simpan</button>
-
-                <button type="reset" class="bg-gray-300 text-black px-4 py-2 rounded hover:bg-gray-400">
+            <div class="flex justify-end gap-4 mt-6">
+                <button type="button" onclick="document.getElementById('formCreateAset').reset();"
+                    class="px-4 py-2 bg-gray-300 hover:bg-gray-400 text-black rounded">
                     Clear
                 </button>
 
-                <a href="{{ route('ict.assets.index') }}" class="px-4 py-2 rounded border hover:bg-gray-100">
-                    Kembali
-                </a>
+                <button type="submit"
+                    class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded">
+                    Simpan
+                </button>
             </div>
 
         </form>
-
     </div>
+
+    {{-- SCRIPT: AUTO UNIT + AUTO USIA FULL --}}
+    <script>
+        // AUTO KIRA USIA MENGIKUT TARIKH PENUH
+        const tarikhInput = document.getElementById('tarikh_perolehan');
+        const usiaField = document.getElementById('usia_aset');
+
+        tarikhInput.addEventListener('change', function () {
+            if (!this.value) {
+                usiaField.value = "";
+                return;
+            }
+
+            const mula = new Date(this.value);
+            const hariIni = new Date();
+
+            let tahun = hariIni.getFullYear() - mula.getFullYear();
+            let bulan = hariIni.getMonth() - mula.getMonth();
+            let hari = hariIni.getDate() - mula.getDate();
+
+            if (hari < 0) {
+                bulan -= 1;
+                hari += new Date(hariIni.getFullYear(), hariIni.getMonth(), 0).getDate();
+            }
+
+            if (bulan < 0) {
+                tahun -= 1;
+                bulan += 12;
+            }
+
+            usiaField.value = `${tahun} tahun ${bulan} bulan ${hari} hari`;
+        });
+
+        // AUTO UNIT DROPDOWN
+        const unitList = {
+            "Bahagian Khidmat Pengurusan": [
+                "Unit Pentadbiran Am",
+                "Unit ICT",
+                "Unit Sumber Manusia",
+                "Unit Kewangan",
+                "Unit Aset & Stor",
+                "Unit Bencana",
+                "Unit Majlis dan Keraian"
+            ],
+            "Bahagian Pengurusan Tanah": [
+                "Unit Pelupusan Tanah",
+                "Unit Pembangunan Tanah",
+                "Unit Hasil",
+                "Unit Teknikal & Penguatkuasaan",
+                "Unit Pendaftaran",
+                "Unit Pindahmilik & Lelong"
+            ],
+            "Bahagian Pembangunan": [
+                "Unit Pembangunan Masyarakat",
+                "Unit Pembangunan Fizikal"
+            ]
+        };
+
+        const bahagianDropdown = document.getElementById('bahagian');
+        const unitDropdown = document.getElementById('unit');
+
+        bahagianDropdown.addEventListener('change', function () {
+            const selected = this.value;
+
+            unitDropdown.innerHTML = '<option value="">-- Pilih Unit --</option>';
+            unitDropdown.disabled = true;
+
+            if (unitList[selected]) {
+                unitDropdown.disabled = false;
+                unitList[selected].forEach(u => {
+                    unitDropdown.innerHTML += `<option value="${u}">${u}</option>`;
+                });
+            }
+        });
+    </script>
+
 </x-app-layout>

@@ -18,7 +18,7 @@ return new class extends Migration {
             $table->string('jenama')->nullable();             
             $table->string('model')->nullable();              
             $table->string('no_siri')->nullable();            
-            $table->year('tahun_perolehan')->nullable();      
+            $table->year('tarikh_perolehan')->nullable();      
             $table->decimal('harga', 12, 2)->nullable();      
 
             // ========= SUMBER PEROLEHAN =========
@@ -34,13 +34,19 @@ return new class extends Migration {
             $table->enum('pembekal', [
                 'GLOBAL ELITE',
                 'S.I.PROTECT',
-                'KONSORTIUM JAYA SDN. BHD',
-                'BSO TECHNOLOGIES SDN. BHD.',
+                'KONSORTIUM JAYA SDN BHD',
+                'BSO TECHNOLOGIES',
                 'TELITI COMPUTERS SDN. BHD.',
                 'SINAR RKK',
                 'MAGECOM SOLUTION',
                 'HAYNIK',
-                'SUNDATA'
+                'SUNDATA',
+                'Hhaynik',
+                'JRC PRO TECHNOLOGY',
+                'KINRARA APLIKASI SDN BHD',
+                'MHS RESOURCES SDN BHD',
+                'TRI SYSTEM TECHNOLOGY',                      
+                
             ])->nullable();
 
             // ========= PENEMPATAN =========

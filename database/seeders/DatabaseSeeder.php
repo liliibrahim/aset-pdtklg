@@ -11,7 +11,8 @@ class DatabaseSeeder extends Seeder
     $this->call([
         BahagianSeeder::class,
         UnitSeeder::class,
-        AdminSeeder::class,   // <-- tambah ini
-    ]);
+        AdminSeeder::class,   
+        UserRoleSeeder::class,
+        ]);
 }
 }

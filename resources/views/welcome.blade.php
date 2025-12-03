@@ -160,8 +160,8 @@
             </h1>
 
             <p class="hero-desc">
-                Platform berpusat untuk mengurus inventori, penempatan, penyelenggaraan
-                dan pelupusan aset ICT di PDT Klang secara sistematik dan teratur.
+                Platform untuk mengurus inventori, penempatan, penyelenggaraan
+                dan pelupusan aset ICT di PDT Klang.
             </p>
 
             <div class="hero-buttons">

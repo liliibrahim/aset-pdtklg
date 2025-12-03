@@ -3,6 +3,8 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use App\Models\Bahagian; // 👈 WAJIB
+use App\Models\Unit;     // 👈 WAJIB
 
 class Lokasi extends Model
 {

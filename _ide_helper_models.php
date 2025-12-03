@@ -48,7 +48,7 @@ namespace App\Models{
  * @property string|null $jenama
  * @property string|null $model
  * @property string|null $kategori
- * @property string|null $tahun_perolehan
+ * @property string|null $tarikh_perolehan
  * @property string|null $harga
  * @property string $sumber
  * @property int|null $pembekal_id

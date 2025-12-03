@@ -2,16 +2,9 @@
 
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
-
 use App\Http\Controllers\DashboardController;
-use App\Http\Controllers\UserController;
-use App\Http\Controllers\SupplierController;
 use App\Http\Controllers\AssetController;
-use App\Http\Controllers\MaintenanceController;
-use App\Http\Controllers\DisposalController;
 use App\Http\Controllers\ActivityLogController;
-
-use App\Models\Unit;
 
 /*
 |--------------------------------------------------------------------------
@@ -22,82 +15,105 @@ Route::get('/', function () {
     return view('welcome');
 })->name('welcome');
 
-require __DIR__.'/auth.php';
+/*
+|--------------------------------------------------------------------------
+| AUTH ROUTES
+|--------------------------------------------------------------------------
+*/
+require __DIR__ . '/auth.php';
 
 /*
 |--------------------------------------------------------------------------
-| AJAX: Dapatkan senarai unit mengikut bahagian
+| SEMUA ROUTE MESTI LOGIN
 |--------------------------------------------------------------------------
 */
-Route::get('/get-units/{bahagian}', function ($bahagian) {
-    return Unit::where('bahagian_id', $bahagian)->get();
+Route::middleware(['auth'])->group(function () {
+
+    /*
+    |--------------------------------------------------------------------------
+    | AUTO REDIRECT IKUT ROLE
+    |--------------------------------------------------------------------------
+    */
+    Route::get('/dashboard', function () {
+
+        $role = Auth::user()->role;
+
+        return match ($role) {
+            'admin' => redirect()->route('admin.dashboard'),
+            'ict'   => redirect()->route('ict.dashboard'),
+            'user'  => redirect()->route('user.dashboard'),
+            default => abort(403),
+        };
+
+    })->name('dashboard');
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | ADMIN ROUTES
+    |--------------------------------------------------------------------------
+    */
+    Route::middleware(['auth', 'role:admin'])
+        ->prefix('admin')
+        ->name('admin.')
+        ->group(function () {
+
+            Route::get('/dashboard', [DashboardController::class, 'admin'])
+                ->name('dashboard');
+
+        });
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | ICT ROUTES
+    |--------------------------------------------------------------------------
+    */
+    Route::middleware(['auth', 'role:ict'])
+        ->prefix('ict')
+        ->name('ict.')
+        ->group(function () {
+
+            // DASHBOARD ICT
+            Route::get('/dashboard', [DashboardController::class, 'ict'])
+                ->name('dashboard');
+
+            // CHART FILTER (WAJIB UNTUK MAIN CHART BERFUNGSI)
+            Route::get('/dashboard/filter', [DashboardController::class, 'filter'])
+                ->name('dashboard.filter');
+
+            // ROUTE ASET INDEX/CREATE/EDIT/UPDATE/SHOW
+            Route::resource('assets', AssetController::class)
+                ->only(['index', 'create', 'store', 'edit', 'update', 'show']);
+
+            // DELETE ASET
+            Route::delete('/assets/{asset}', [AssetController::class, 'destroy'])
+                ->name('assets.destroy');
+        });
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | USER ROUTES
+    |--------------------------------------------------------------------------
+    */
+    Route::middleware(['auth', 'role:user'])
+        ->prefix('user')
+        ->name('user.')
+        ->group(function () {
+
+            Route::get('/dashboard', [DashboardController::class, 'user'])
+                ->name('dashboard');
+
+        });
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | ACTIVITY LOG
+    |--------------------------------------------------------------------------
+    */
+    Route::get('/activity', [ActivityLogController::class, 'index'])
+        ->name('activity.index');
+
 });
-
-/*
-|--------------------------------------------------------------------------
-| UNIVERSAL DASHBOARD REDIRECT
-|--------------------------------------------------------------------------
-*/
-Route::get('/dashboard', function () {
-
-    $user = Auth::user();
-    if (!$user) return redirect()->route('welcome');
-
-    if ($user->role === 'admin_system') {
-        return redirect()->route('admin.dashboard');
-    }
-
-    if ($user->role === 'ict') {
-        return redirect()->route('ict.dashboard');
-    }
-
-    return redirect()->route('welcome');
-
-})->middleware(['auth'])->name('dashboard');
-
-/*
-|--------------------------------------------------------------------------
-| ADMIN SISTEM ROUTES
-|--------------------------------------------------------------------------
-*/
-Route::prefix('admin')
-    ->name('admin.')
-    ->middleware(['auth'])   // REMOVE role:admin_system
-    ->group(function () {
-
-        Route::get('/dashboard', [DashboardController::class, 'admin'])
-            ->name('dashboard');
-
-        Route::resource('users', UserController::class);
-        Route::resource('suppliers', SupplierController::class);
-        Route::resource('assets', AssetController::class);
-
-        Route::get('/activity-logs', [ActivityLogController::class, 'index'])
-            ->name('activity.logs');
-    });
-
-/*
-|--------------------------------------------------------------------------
-| PEGAWAI ICT ROUTES
-|--------------------------------------------------------------------------
-*/
-Route::prefix('ict')
-    ->name('ict.')
-    ->middleware(['auth'])   // REMOVE role:ict
-    ->group(function () {
-
-        Route::get('/dashboard', [DashboardController::class, 'ict'])
-            ->name('dashboard');
-
-        Route::resource('assets', AssetController::class)
-            ->only(['index','create','store','edit','update','show']);
-
-        Route::resource('maintenance', MaintenanceController::class)
-            ->only(['store','update','destroy']);
-
-        Route::resource('disposals', DisposalController::class)
-            ->only(['store','update','destroy']);
-
-        Route::resource('suppliers', SupplierController::class)
-            ->only(['index','create','store']);
-    });

@@ -3,27 +3,26 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class ActivityLog extends Model
 {
-    use HasFactory;
+    protected $table = 'activity_logs';
 
     protected $fillable = [
-        'user_id',
-        'action',
         'module',
-        'record_id',
-        'payload',
-        'ip',
-    ];
-
-    protected $casts = [
-        'payload' => 'array',
+        'action',
+        'user_id',
+        'asset_id',
+        'description',
     ];
 
     public function user()
     {
         return $this->belongsTo(User::class);
+    }
+
+    public function asset()
+    {
+        return $this->belongsTo(Asset::class);
     }
 }
