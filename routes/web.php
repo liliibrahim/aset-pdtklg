@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\AssetController;
+use App\Http\Controllers\AssetReportController;
 use App\Http\Controllers\ActivityLogController;
 
 /*
@@ -106,8 +107,27 @@ Route::middleware(['auth'])->group(function () {
                 ->name('dashboard');
 
         });
+/*
+    |--------------------------------------------------------------------------
+    | LAPORAN
+    |--------------------------------------------------------------------------
+    */
+Route::middleware(['auth', 'role:ict'])
+    ->prefix('ict')
+    ->name('ict.')
+    ->group(function () {
 
+        // ... route dashboard & asset awak yang lain
 
+        Route::get('/assets/{id}/laporan-a', [AssetReportController::class, 'laporanA'])
+            ->name('assets.laporanA');
+
+        Route::get('/assets/{id}/laporan-b', [AssetReportController::class, 'laporanB'])
+            ->name('assets.laporanB');
+
+        Route::get('/laporan/senarai', [AssetReportController::class, 'laporanSenarai'])
+            ->name('laporan.senarai');
+    });
     /*
     |--------------------------------------------------------------------------
     | ACTIVITY LOG
@@ -116,4 +136,5 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/activity', [ActivityLogController::class, 'index'])
         ->name('activity.index');
 
+        
 });

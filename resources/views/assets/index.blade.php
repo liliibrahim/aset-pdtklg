@@ -6,14 +6,31 @@
         </h1>
 
         {{-- BUTANG TAMBAH ASET --}}
-        <div class="mb-4">
-            <a href="{{ route('ict.assets.create') }}"
-               class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 shadow">
-                + Tambah Aset
-            </a>
-        </div>
+        <div class="flex gap-3 mb-4">
+    <a href="{{ route('ict.assets.create') }}" 
+       class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
+        + Tambah Aset
+    </a>
 
-        {{-- FILTER FORM --}}
+    <a href="{{ route('ict.assets.index') }}" 
+       class="px-4 py-2 bg-gray-700 text-white rounded-lg hover:bg-gray-800">
+        Senarai Aset
+    </a>
+</div>
+
+{{-- LAPORAN --}}
+<div class="flex justify-between items-center mb-4">
+    <h1 class="text-2xl font-bold text-gray-800">
+        Senarai Aset ICT
+    </h1>
+
+    <a href="{{ route('ict.laporan.senarai', request()->all()) }}"
+       class="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700">
+        📄 Cetak Laporan PDF
+    </a>
+</div>
+
+{{-- FILTER FORM --}}
         <form method="GET" class="mb-4 bg-white p-4 rounded-xl shadow flex flex-wrap gap-4">
 
             <div>
@@ -76,6 +93,7 @@
                         <th class="px-4 py-3 text-left">Kategori</th>
                         <th class="px-4 py-3 text-left">Jenama</th>
                         <th class="px-4 py-3 text-left">Model</th>
+                        <th class="px-4 py-2 text-left">No Siri</th>
                         <th class="px-4 py-3 text-left">Bahagian</th>
                         <th class="px-4 py-3 text-left">Unit</th>
                         <th class="px-4 py-3 text-left">Pengguna</th>
@@ -92,6 +110,7 @@
                             <td class="px-4 py-3">{{ $a->kategori ?? '-' }}</td>
                             <td class="px-4 py-3">{{ $a->jenama ?? '-' }}</td>
                             <td class="px-4 py-3">{{ $a->model ?? '-' }}</td>
+                            <td class="px-4 py-2">{{ $a->no_siri ??'-' }}</td>
                             <td class="px-4 py-3">{{ $a->bahagian ?? '-' }}</td>
                             <td class="px-4 py-3">{{ $a->unit ?? '-' }}</td>
                             <td class="px-4 py-3">{{ $a->nama_pengguna ?? '-' }}</td>

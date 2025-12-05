@@ -5,20 +5,7 @@
             Dashboard — Pegawai ICT
         </h1>
 
-        {{-- BUTANG TINDAKAN --}}
-        <div class="flex gap-3 mb-6">
-            <a href="{{ route('ict.assets.create') }}"
-               class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700">
-                + Tambah Aset
-            </a>
-
-            <a href="{{ route('ict.assets.index') }}"
-               class="bg-gray-600 text-white px-4 py-2 rounded-lg hover:bg-gray-700">
-                Senarai Aset
-            </a>
-        </div>
-
-        {{-- AI INSIGHT BOX --}}
+    {{-- AI INSIGHT BOX --}}
         <div class="bg-gradient-to-r from-indigo-600 to-purple-600 text-white p-6 rounded-xl shadow mb-6">
             <h2 class="text-xl font-semibold mb-2">🔍 Insight Sistem</h2>
             <p class="text-sm opacity-90">

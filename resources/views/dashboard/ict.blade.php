@@ -2,29 +2,16 @@
     <div class="px-6 py-6">
 
         {{-- Tajuk --}}
-        <h1 class="text-2xl font-bold text-gray-800 mb-6">
-            Dashboard — Pegawai ICT
-        </h1>
+        <h1 class="text-l font-bold text-gray-800 mb-6">
+            DASHBOARD - PEGAWAI ICT
+        </h1>  
 
-        {{-- BUTANG --}}
-        <div class="flex gap-3 mb-6">
-            <a href="{{ route('ict.assets.create') }}" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700">
-                + Tambah Aset
-            </a>
-
-            <a href="{{ route('ict.assets.index') }}" class="bg-gray-600 text-white px-4 py-2 rounded-lg hover:bg-gray-700">
-                Senarai Aset
-            </a>
-        </div>
-
-        {{-- INSIGHT --}}
-        <div class="bg-gradient-to-r from-indigo-600 to-purple-600 text-white p-6 rounded-xl shadow mb-6">
+             {{-- INSIGHT --}}
+        <div class="bg-gradient-to-r from-indigo-600 to-purple-600 text-white p-3 rounded-xl shadow mb-6">
             <h2 class="text-xl font-semibold mb-2">🔍 Insight Sistem</h2>
             <p class="text-sm opacity-90">
                 Sistem mendapati <strong>{{ $lebih8 }}</strong> aset berumur lebih 8 tahun.
-                Disyorkan dinilai untuk pelupusan.
-                <br>
-                Terdapat <strong>{{ $tanpaPenempatan }}</strong> aset tanpa penempatan.
+                Disyorkan dinilai untuk pelupusan. Terdapat <strong>{{ $tanpaPenempatan }}</strong> aset tanpa penempatan.
             </p>
         </div>
 
@@ -41,49 +28,60 @@
                 {{-- STATISTIK KAD 4 --}}
                 <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
 
-                    <div class="bg-white p-6 shadow rounded-xl">
-                        <h3 class="text-sm text-gray-500">JUMLAH KESELURUHAN</h3>
+                    <div class="bg-white p-5 shadow rounded-xl">
+                        <h3 class="text-sm text-gray-800">JUMLAH KESELURUHAN</h3>
                         <p class="text-3xl font-bold mt-2 text-blue-700">{{ $totalAset }}</p>
                     </div>
 
-                    <div class="bg-white p-6 shadow rounded-xl">
-                        <h3 class="text-sm text-gray-500">AKTIF DIGUNAKAN</h3>
+                    <div class="bg-white p-5 shadow rounded-xl">
+                        <h3 class="text-sm text-gray-800">AKTIF DIGUNAKAN</h3>
                         <p class="text-3xl font-bold mt-2 text-green-600">{{ $digunakan }}</p>
                     </div>
 
-                    <div class="bg-white p-6 shadow rounded-xl">
-                        <h3 class="text-sm text-gray-500">ROSAK</h3>
+                    <div class="bg-white p-5 shadow rounded-xl">
+                        <h3 class="text-sm text-gray-800">ROSAK</h3>
                         <p class="text-3xl font-bold mt-2 text-red-600">{{ $rosak }}</p>
                     </div>
 
-                    <div class="bg-white p-6 shadow rounded-xl">
-                        <h3 class="text-sm text-gray-500">TANPA PENEMPATAN</h3>
+                    <div class="bg-white p-5 shadow rounded-xl">
+                        <h3 class="text-sm text-gray-800">TANPA PENEMPATAN</h3>
                         <p class="text-3xl font-bold mt-2 text-orange-600">{{ $tanpaPenempatan }}</p>
                     </div>
 
                 </div>
-
+               
                 {{-- UMUR ASET --}}
-                <div class="bg-white p-6 shadow rounded-xl mb-6">
-                    <h2 class="font-bold text-lg mb-4">⏳ Umur Aset (Predictive Replacement)</h2>
+                <div class="bg-white p-6 rounded-xl shadow mb-6">
+    <h2 class="text-lg font-bold mb-4">🕒 Umur Aset (Predictive Replacement)</h2>
 
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                        <div class="p-4 bg-yellow-100 rounded-lg">
-                            <h3 class="text-gray-600 text-sm">Akan Usang ( > 5 tahun )</h3>
-                            <p class="text-xl font-bold text-yellow-700">{{ $lebih5 }}</p>
-                        </div>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
 
-                        <div class="p-4 bg-orange-100 rounded-lg">
-                            <h3 class="text-gray-600 text-sm">Wajar Dinilai Pelupusan ( > 7 tahun )</h3>
-                            <p class="text-xl font-bold text-orange-700">{{ $lebih7 }}</p>
-                        </div>
+        {{-- > 5 Tahun --}}
+        <a href="{{ route('ict.assets.index', ['usia' => 5]) }}" class="block">
+            <div class="p-4 bg-yellow-100 rounded-lg shadow hover:bg-yellow-200 transition h-full">
+                <h3 class="text-gray-700 text-sm font-semibold">Akan Usang ( > 5 tahun )</h3>
+                <p class="text-2xl font-bold text-yellow-700 mt-2">{{ $lebih5 }}</p>
+            </div>
+        </a>
 
-                        <div class="p-4 bg-red-100 rounded-lg">
-                            <h3 class="text-gray-600 text-sm">Disyorkan Ganti Tahun Ini ( > 8 tahun )</h3>
-                            <p class="text-xl font-bold text-red-700">{{ $lebih8 }}</p>
-                        </div>
-                    </div>
-                </div>
+        {{-- > 7 Tahun --}}
+        <a href="{{ route('ict.assets.index', ['usia' => 7]) }}" class="block">
+            <div class="p-4 bg-orange-100 rounded-lg shadow hover:bg-orange-200 transition h-full">
+                <h3 class="text-gray-700 text-sm font-semibold">Wajar Dinilai Pelupusan ( > 7 tahun )</h3>
+                <p class="text-2xl font-bold text-orange-700 mt-2">{{ $lebih7 }}</p>
+            </div>
+        </a>
+
+        {{-- > 8 Tahun --}}
+        <a href="{{ route('ict.assets.index', ['usia' => 8]) }}" class="block">
+            <div class="p-4 bg-red-100 rounded-lg shadow hover:bg-red-200 transition h-full">
+                <h3 class="text-gray-700 text-sm font-semibold">Disyorkan Ganti Tahun Ini ( > 8 tahun )</h3>
+                <p class="text-2xl font-bold text-red-700 mt-2">{{ $lebih8 }}</p>
+            </div>
+        </a>
+
+    </div>
+</div>
 
                 {{-- CHART UTAMA --}}
                 <div class="bg-white p-6 shadow rounded-xl mb-6">

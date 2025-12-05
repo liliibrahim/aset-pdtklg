@@ -13,6 +13,19 @@
             </a>
         </div>
 
+
+        <div class="flex justify-end gap-2 mb-4">
+    <a href="{{ route('ict.assets.laporanA', $asset->id) }}"
+       class="px-3 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 text-sm">
+        Laporan A (Maklumat Aset)
+    </a>
+
+    <a href="{{ route('ict.assets.laporanB', $asset->id) }}"
+       class="px-3 py-2 bg-green-600 text-white rounded hover:bg-green-700 text-sm">
+        Laporan B (Naik Taraf / Komponen)
+    </a>
+</div>
+
         {{-- ===================================================== --}}
         {{--               MAKLUMAT ASET ICT                     --}}
         {{-- ===================================================== --}}
@@ -39,16 +52,6 @@
                 <div>
                     <div class="text-gray-600 font-semibold">No Siri</div>
                     <div>{{ $asset->no_siri ?? '-' }}</div>
-                </div>
-
-                <div>
-                    <div class="text-gray-600 font-semibold">Pengguna Semasa</div>
-                    <div>
-                    @if($asset->currentMovement)
-                        {{ $asset->currentMovement->nama_pengguna ?? '-' }}
-                    @else
-                 @endif
-                </div>
                 </div>
 
                 <div>
@@ -93,35 +96,46 @@
                                 <th class="px-3 py-2 border-b text-left">Unit</th>
                                 <th class="px-3 py-2 border-b text-left">Pengguna</th>
                                 <th class="px-3 py-2 border-b text-left">Tarikh Mula</th>
-                                <th class="px-3 py-2 border-b text-left">Tarikh Tamat</th>
-                                <th class="px-3 py-2 border-b text-left">Catatan</th>
+                                                                <th class="px-3 py-2 border-b text-left">Catatan</th>
                             </tr>
                         </thead>
+
                         <tbody>
-                            @foreach ($asset->movements as $i => $m)
+                            @foreach ($asset->movements as $m)
                                 <tr class="hover:bg-gray-50">
-                                    <td class="px-3 py-2 border-b">{{ $i + 1 }}</td>
-                                    <td class="px-3 py-2 border-b">{{ $m->bahagian ?? '-' }}</td>
-                                    <td class="px-3 py-2 border-b">{{ $m->unit ?? '-' }}</td>
-                                    <td class="px-3 py-2 border-b">{{ $m->nama_pengguna ?? '-' }}</td>
 
+                                    {{-- Bil --}}
+                                    <td class="px-3 py-2 border-b">{{ $loop->iteration }}</td>
+
+                                    {{-- Bahagian --}}
                                     <td class="px-3 py-2 border-b">
-                                    @if(!empty($m->tarikh_mula))
-                                    {{ \Carbon\Carbon::parse($m->tarikh_mula)->format('d.m.Y') }}
-                                    @else
-                            -
-                         @endif
-                            </td>
+                                        {{ $m->bahagian ?? '-' }}
+                                    </td>
 
+                                    {{-- Unit --}}
                                     <td class="px-3 py-2 border-b">
-    @if(!empty($m->tarikh_tamat))
-        {{ \Carbon\Carbon::parse($m->tarikh_tamat)->format('d.m.Y') }}
-    @else
-        -
-    @endif
-</td>
+                                        {{ $m->unit ?? '-' }}
+                                    </td>
 
-                                    <td class="px-3 py-2 border-b">{{ $m->catatan ?? '-' }}</td>
+                                    {{-- Pengguna --}}
+                                    <td class="px-3 py-2 border-b">
+                                        {{ $m->nama_pengguna ?? '-' }}
+                                    </td>
+
+                                    {{-- TARIKH MULA --}}
+                                    <td class="px-3 py-2 border-b">
+                                        @if(!empty($m->tarikh_mula) && $m->tarikh_mula != '0000-00-00')
+                                            {{ \Carbon\Carbon::parse($m->tarikh_mula)->format('d.m.Y') }}
+                                        @else
+                                            -
+                                        @endif
+                                    </td>
+
+                                    {{-- Catatan --}}
+                                    <td class="px-3 py-2 border-b">
+                                        {{ $m->catatan ?? '-' }}
+                                    </td>
+
                                 </tr>
                             @endforeach
                         </tbody>

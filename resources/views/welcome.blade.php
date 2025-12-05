@@ -116,7 +116,7 @@
         <div class="topbar-left">
             <img src="{{ asset('image/jataselangor.png') }}" alt="Jata Selangor">
             <div>
-                <div style="font-weight:700;">PEJABAT DAERAH/TANAH KLANG</div>
+                <div style="font-weight:700;">PEJABAT DAERAH DAN TANAH KLANG</div>
                 <div style="font-size:13px; opacity:.9;">Sistem Pemantauan Aset ICT</div>
             </div>
         </div>

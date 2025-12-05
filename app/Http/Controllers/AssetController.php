@@ -35,11 +35,26 @@ class AssetController extends Controller
         if ($request->status)   $query->where('status', $request->status);
 
         return view('assets.index', [
-            'assets'    => $query->paginate(20),
-            'kategoris' => Asset::select('kategori')->distinct()->pluck('kategori'),
-            'bahagians' => Asset::select('bahagian')->distinct()->pluck('bahagian'),
-            'units'     => Asset::select('unit')->distinct()->pluck('unit'),
-        ]);
+    'assets'    => $query->paginate(20),
+
+    'kategoris' => Asset::select('kategori')
+        ->whereNotNull('kategori')
+        ->where('kategori', '!=', '')
+        ->distinct()
+        ->pluck('kategori'),
+
+    'bahagians' => Asset::select('bahagian')
+        ->whereNotNull('bahagian')
+        ->where('bahagian', '!=', '')
+        ->distinct()
+        ->pluck('bahagian'),
+
+    'units'     => Asset::select('unit')
+        ->whereNotNull('unit')
+        ->where('unit', '!=', '')
+        ->distinct()
+        ->pluck('unit'),
+]);
     }
 
     /**
@@ -148,35 +163,55 @@ class AssetController extends Controller
      * LOG MOVEMENT
      */
     private function logMovement(Asset $asset, array $validated, array $original)
+{
+    // ========================
+    // 1. PATCH UNTUK STATUS ROSAK
+    // ========================
+    if (($original['status'] ?? null) !== ($asset->status ?? null) 
+        && $asset->status === 'Rosak') 
     {
-        $fields = ['bahagian', 'unit', 'nama_pengguna'];
-        $changed = false;
+        $asset->movements()->create([
+            'bahagian'      => $asset->bahagian,
+            'unit'          => $asset->unit,
+            'nama_pengguna' => $asset->nama_pengguna,
+            'tarikh_mula'   => now(),
+            'tarikh_tamat'  => null,
+            'catatan'       => 'Aset ditanda sebagai ROSAK',
+        ]);
 
-        foreach ($fields as $field) {
-            if (($original[$field] ?? null) !== ($validated[$field] ?? null)) {
-                $changed = true;
-                break;
-            }
-        }
+        return; // berhenti, jangan teruskan movement lain
+    }
 
-        if ($changed) {
-            // tamatkan rekod lama
-            $last = $asset->movements()->whereNull('tarikh_tamat')->first();
-            if ($last) {
-                $last->update(['tarikh_tamat' => now()]);
-            }
+    // ========================
+    // 2. CODE ASAL ANDA (KEKALKAN)
+    // ========================
+    $fields = ['bahagian', 'unit', 'nama_pengguna'];
+    $changed = false;
 
-            // cipta rekod baru
-            $asset->movements()->create([
-                'bahagian'      => $validated['bahagian'] ?? null,
-                'unit'          => $validated['unit'] ?? null,
-                'nama_pengguna' => $validated['nama_pengguna'] ?? null,
-                'tarikh_mula'   => now(),
-                'catatan'       => 'Perubahan penempatan aset',
-            ]);
+    foreach ($fields as $field) {
+        if (($original[$field] ?? null) !== ($validated[$field] ?? null)) {
+            $changed = true;
+            break;
         }
     }
 
+    if ($changed) {
+        // tamatkan rekod lama
+        $last = $asset->movements()->whereNull('tarikh_tamat')->first();
+        if ($last) {
+            $last->update(['tarikh_tamat' => now()]);
+        }
+
+        // cipta rekod baru
+        $asset->movements()->create([
+            'bahagian'      => $validated['bahagian'] ?? null,
+            'unit'          => $validated['unit'] ?? null,
+            'nama_pengguna' => $validated['nama_pengguna'] ?? null,
+            'tarikh_mula'   => now(),
+            'catatan'       => 'Perubahan penempatan aset',
+        ]);
+    }
+}
     /**
      * EDIT
      */
