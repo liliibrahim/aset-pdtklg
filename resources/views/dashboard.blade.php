@@ -160,6 +160,10 @@
             }]
         }
     });
+
+    <a href="{{ route('ict.aduan.index') }}">
+    Aduan Baru: {{ $aduanBaru }}
+</a>
 </script>
 
 </x-app-layout>

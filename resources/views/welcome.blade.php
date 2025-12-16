@@ -167,15 +167,28 @@
             <div class="hero-buttons">
 
                 {{-- USER BELUM LOGIN --}}
-                @guest
-                    <a href="{{ route('login') }}" class="btn-primary">Log Masuk</a>
-                @endguest
+            @guest
+                <a href="{{ route('login') }}" class="btn-primary">Log Masuk</a>
 
-                {{-- USER SUDAH LOGIN --}}
-                @auth
-                    <a href="{{ route('dashboard') }}" class="btn-primary">Pergi ke Dashboard</a>
-                @endauth
-
+                <a href="{{ route('register') }}"
+                style="
+                        padding:12px 24px;
+                        border:2px solid var(--pdt-blue);
+                        color:var(--pdt-blue);
+                        font-weight:600;
+                        border-radius:999px;
+                        text-decoration:none;
+                        font-size:14px;
+                ">
+                    Daftar Akaun
+                </a>
+            @endguest
+            
+@guest
+    <div class="mt-3 text-xs text-gray-500">
+    Belum mempunyai akaun? Sila daftar.
+</div>
+@endguest
             </div>
         </div>
 

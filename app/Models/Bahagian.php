@@ -3,7 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use App\Models\Unit; // 👈 WAJIB TAMBAH
+use App\Models\Unit; 
 
 class Bahagian extends Model
 {

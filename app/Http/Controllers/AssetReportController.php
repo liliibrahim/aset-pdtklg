@@ -13,8 +13,7 @@ class AssetReportController extends Controller
         $this->middleware('auth');
     }
 
-    /* LAPORAN A – SATU ASET (KEWPA BAHAGIAN A) */
-    public function laporanA($id)
+     public function laporanA($id)
     {
         $asset = Asset::findOrFail($id);
 
@@ -24,13 +23,11 @@ class AssetReportController extends Controller
         return $pdf->stream("Laporan_A_{$asset->id}.pdf");
     }
 
-    /* LAPORAN B – SATU ASET (NAIK TARAF / KOMPONEN) */
-    public function laporanB($id)
+     public function laporanB($id)
     {
         $asset = Asset::findOrFail($id);
-
-        // kalau ada jadual komponen sendiri, tukar ikut model awak
-        $komponen = []; // buat kosong dulu, nanti boleh sambung
+ 
+        $komponen = []; 
 
         $pdf = Pdf::loadView('laporan.laporanB', compact('asset', 'komponen'))
                   ->setPaper('A4', 'landscape');
@@ -38,12 +35,10 @@ class AssetReportController extends Controller
         return $pdf->stream("Laporan_B_{$asset->id}.pdf");
     }
 
-    /* LAPORAN C – SENARAI ASET IKUT FILTER */
-    public function laporanSenarai(Request $request)
+     public function laporanSenarai(Request $request)
     {
         $query = Asset::query();
 
-        // SAMAKAN FILTER DENGAN AssetController@index
         if ($request->q) {
             $query->where(function ($q) use ($request) {
                 $q->where('no_siri', 'like', "%{$request->q}%")
@@ -61,10 +56,18 @@ class AssetReportController extends Controller
 
         $pdf = Pdf::loadView('laporan.laporanSenarai', [
                     'assets'   => $assets,
-                    'request'  => $request, // untuk papar tajuk filter dalam PDF
-                ])
+                    'request'  => $request,                 ])
                 ->setPaper('A4', 'landscape');
 
         return $pdf->stream('Laporan_Senarai_Aset.pdf');
     }
+    public function asetUsingPdf(Request $request)
+{
+    $assets = $this->asetUsing($request)->getData()['assets'];
+
+    $pdf = Pdf::loadView('laporan.pdf.aset-using', compact('assets'))
+        ->setPaper('A4', 'landscape');
+
+    return $pdf->stream('Laporan_Aset_Usang.pdf');
+}
 }

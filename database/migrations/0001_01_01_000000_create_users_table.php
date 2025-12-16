@@ -11,28 +11,23 @@ return new class extends Migration
         Schema::create('users', function (Blueprint $table) {
             $table->id();
 
-            // Nama pengguna
-            $table->string('name');
+                     $table->string('name');
 
-            // Emel mesti unique
             $table->string('email')->unique();
 
-            // Kolum role (jika anda mahu simpan role terus dalam table users)
-            // Tidak perlu limit panjang kecil, supaya tidak truncate lagi
             $table->string('role', 50)->nullable();
 
-            // Standard Laravel
+
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
 
-            // Token remember me
+          
             $table->rememberToken();
 
-            // Rekod masa
+          
             $table->timestamps();
 
-            // Jika mahu save log delete
-            // $table->softDeletes();
+       
         });
     }
 

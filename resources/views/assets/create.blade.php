@@ -1,10 +1,16 @@
 <x-app-layout>
     <div class="px-6 py-6">
 
-        <h1 class="text-2xl font-bold text-gray-800 mb-6">
-            Tambah Aset ICT
-        </h1>
+        <div class="flex items-center justify-between mb-6">
+            <h1 class="text-2xl font-bold text-gray-800">
+                Tambah Aset ICT
+            </h1>
 
+            <a href="{{ route('ict.assets.index') }}"
+               class="px-4 py-2 text-sm rounded-lg border border-gray-300 bg-white hover:bg-gray-50">
+                ← Kembali
+            </a>
+        </div>
         {{-- PAPAR ERROR --}}
         @if ($errors->any())
             <div class="bg-red-100 text-red-700 px-4 py-3 rounded mb-4">
@@ -170,7 +176,7 @@
                         <select name="sumber_perolehan" required class="mt-1 w-full border rounded px-3 py-2">
                             <option value="">-- Pilih --</option>
                             <option>Pejabat SUK Selangor</option>
-                            <option>PPejabat Tanah Galian Selangor</option>
+                            <option>Pejabat Tanah Galian Selangor</option>
                             <option>Perolehan Jabatan</option>
                             <option>Jabatan Ketua Pengarah Tanah dan Galian Persekutuan</option>
                             <option>Sumbangan</option>

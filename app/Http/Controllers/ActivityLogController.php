@@ -2,18 +2,39 @@
 
 namespace App\Http\Controllers;
 
-
-use Illuminate\Http\Request;
+use App\Models\ActivityLog;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class ActivityLogController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware(['auth', 'role:admin']);
+    }
+
+    /**
+     * Paparan Senarai Semua Log Aktiviti (HTML)
+     */
     public function index()
     {
-        // Ambil semua log, terbaru dahulu
-        $logs = ActivityLog::with(['user', 'asset'])
-            ->orderBy('created_at', 'desc')
-            ->paginate(20);
+        $logs = ActivityLog::with('user')
+            ->orderByDesc('created_at')
+            ->paginate(15);
 
-        return view('activity.index', compact('logs'));
+        return view('activity_logs.index', compact('logs'));
+    }
+
+    /**
+     * Cetak Laporan PDF Log Aktiviti
+     */
+    public function pdf()
+    {
+        $logs = ActivityLog::with('user')
+            ->orderByDesc('created_at')
+            ->get(); // 
+
+        $pdf = Pdf::loadView('activity_logs.pdf', compact('logs'));
+
+        return $pdf->stream('log-aktiviti-sistem.pdf');
     }
 }

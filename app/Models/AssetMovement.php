@@ -3,7 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use App\Models\Asset;   // 👈 WAJIB TAMBAH
+use App\Models\Asset;   
 
 class AssetMovement extends Model
 {

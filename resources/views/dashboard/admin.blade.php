@@ -5,59 +5,129 @@
         Dashboard — Admin Sistem
     </h1>
 
-    {{-- STAT CARDS --}}
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+    {{-- STAT PENGGUNA --}}
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
 
-        <div class="bg-white shadow rounded-xl p-6 border">
-            <h3 class="text-gray-500 text-sm">Jumlah Aset</h3>
-            <div class="text-3xl font-bold text-blue-700 mt-2">{{ $totalAset }}</div>
+    {{-- Jumlah Pengguna --}}
+    <a href="{{ route('admin.users.index') }}"
+       class="block bg-white shadow rounded-xl p-6 border
+              hover:shadow-lg hover:bg-gray-50 transition cursor-pointer">
+
+        <h3 class="text-gray-500 text-sm">Jumlah Keseluruhan Pengguna</h3>
+        <div class="text-3xl font-bold text-blue-700 mt-2">
+            {{ $totalUsers }}
         </div>
+    </a>
 
-        <div class="bg-white shadow rounded-xl p-6 border">
-            <h3 class="text-gray-500 text-sm">Aset Rosak</h3>
-            <div class="text-3xl font-bold text-red-600 mt-2">{{ $rosak }}</div>
+    {{-- Pentadbir Sistem --}}
+    <a href="{{ route('admin.users.admins') }}"
+       class="block bg-white shadow rounded-xl p-6 border
+              hover:shadow-lg hover:bg-gray-50 transition cursor-pointer">
+
+        <h3 class="text-gray-500 text-sm">Pentadbir Sistem</h3>
+        <div class="text-3xl font-bold text-green-700 mt-2">
+            {{ $totalAdmins }}
         </div>
+    </a>
 
-        <div class="bg-white shadow rounded-xl p-6 border">
-            <h3 class="text-gray-500 text-sm">Untuk Dilupus</h3>
-            <div class="text-3xl font-bold text-yellow-600 mt-2">{{ $hampirLupus }}</div>
+    {{-- Pegawai ICT --}}
+    <a href="{{ route('admin.users.ict') }}"
+       class="block bg-white shadow rounded-xl p-6 border
+              hover:shadow-lg hover:bg-gray-50 transition cursor-pointer">
+
+        <h3 class="text-gray-500 text-sm">Pegawai ICT</h3>
+        <div class="text-3xl font-bold text-purple-700 mt-2">
+            {{ $totalICT }}
         </div>
+    </a>
 
+</div>
+
+    {{-- KONFIGURASI SISTEM --}}
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+
+    {{-- Jumlah Bahagian --}}
+    <div class="block bg-white shadow rounded-xl p-6 border
+            hover:shadow-lg hover:bg-gray-50 transition">
+
+    <h3 class="text-gray-500 text-sm">Jumlah Bahagian</h3>
+    <div class="text-3xl font-bold text-indigo-700 mt-2">
+        {{ $totalBahagian }}
     </div>
+</div>
 
+
+    {{-- Jumlah Unit --}}
+   
+<div class="block bg-white shadow rounded-xl p-6 border
+            hover:shadow-lg hover:bg-gray-50 transition">
+
+    <h3 class="text-gray-500 text-sm">Jumlah Unit</h3>
+    <div class="text-3xl font-bold text-indigo-700 mt-2">
+        {{ $totalUnit }}
+    </div>
+</div>
+
+
+
+
+</div>
+
+    {{-- ACTIVITY LOGS --}}
     <div class="bg-white shadow rounded-xl overflow-hidden">
-        <div class="px-4 py-3 border-b flex justify-between">
-            <h2 class="text-sm font-semibold text-gray-600 uppercase">10 Aset Terkini</h2>
-            <a href="#" class="text-blue-700 text-xs">Lihat Semua →</a>
+        <div class="px-4 py-3 border-b flex justify-between items-center">
+            <h2 class="text-sm font-semibold text-gray-600 uppercase">
+                Aktiviti Terkini Sistem
+            </h2>
+
+            <a href="{{ route('admin.activity-logs.index') }}"
+               class="text-sm text-blue-600 hover:underline">
+                Lihat Semua →
+            </a>
         </div>
 
-        <table class="min-w-full text-sm">
-            <thead class="bg-gray-50 text-gray-500 uppercase">
-                <tr>
-                    <th class="px-4 py-2 text-left">Nama</th>
-                    <th class="px-4 py-2 text-left">Jenama</th>
-                    <th class="px-4 py-2 text-left">Model</th>
-                    <th class="px-4 py-2 text-left">Status</th>
-                </tr>
-            </thead>
+        <table class="w-full border text-sm">
+    <thead class="bg-gray-100">
+        <tr>
+            <th class="border px-3 py-2">Tarikh</th>
+            <th class="border px-3 py-2">Pengguna</th>
+            <th class="border px-3 py-2">Aktiviti</th>
+            <th class="border px-3 py-2">Tindakan</th>
+            <th class="border px-3 py-2">Modul</th>
+            <th class="border px-3 py-2">Aset</th>
+        </tr>
+    </thead>
 
-            <tbody class="divide-y">
-                @forelse($recentAsets as $a)
-                <tr class="hover:bg-gray-50">
-                    <td class="px-4 py-2">{{ $a->nama }}</td>
-                    <td class="px-4 py-2">{{ $a->jenama ?? '-' }}</td>
-                    <td class="px-4 py-2">{{ $a->model ?? '-' }}</td>
-                    <td class="px-4 py-2">{{ $a->status }}</td>
-                </tr>
-                @empty
-                <tr>
-                    <td colspan="4" class="px-4 py-4 text-center text-gray-500">
-                        Tiada rekod aset.
-                    </td>
-                </tr>
-                @endforelse
-            </tbody>
-        </table>
+<tbody>
+    @foreach($aktivitiTerkini as $log)
+    <tr>
+        <td class="border px-3 py-2">
+            {{ $log->created_at->format('d/m/Y H:i') }}
+        </td>
+
+        <td class="border px-3 py-2">
+            {{ $log->user->name ?? '-' }}
+        </td>
+
+        <td class="border px-3 py-2">
+            {{ $log->aktiviti }}
+        </td>
+
+        <td class="border px-3 py-2">
+            {{ $log->tindakan }}
+        </td>
+
+        <td class="border px-3 py-2">
+            {{ $log->modul }}
+        </td>
+
+        <td class="border px-3 py-2">
+            {{ $log->aset ?? '-' }}
+        </td>
+    </tr>
+    @endforeach
+</tbody>
+</table>
     </div>
 
 </div>

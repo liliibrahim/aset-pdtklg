@@ -16,11 +16,13 @@
 
         <div class="flex justify-end gap-2 mb-4">
     <a href="{{ route('ict.assets.laporanA', $asset->id) }}"
+        target="_blank"
        class="px-3 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 text-sm">
         Laporan A (Maklumat Aset)
     </a>
 
     <a href="{{ route('ict.assets.laporanB', $asset->id) }}"
+        target="_blank"
        class="px-3 py-2 bg-green-600 text-white rounded hover:bg-green-700 text-sm">
         Laporan B (Naik Taraf / Komponen)
     </a>

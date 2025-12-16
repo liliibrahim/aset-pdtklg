@@ -1,9 +1,16 @@
 <x-app-layout>
     <div class="px-6 py-6">
 
-        <h1 class="text-2xl font-bold text-gray-800 mb-6">
-            Kemaskini Aset ICT
-        </h1>
+        <div class="flex items-center justify-between mb-6">
+            <h1 class="text-2xl font-bold text-gray-800">
+                Kemaskini Aset ICT
+            </h1>
+
+            <a href="{{ route('ict.assets.index') }}"
+               class="px-4 py-2 text-sm rounded-lg border border-gray-300 bg-white hover:bg-gray-50">
+                ← Kembali
+            </a>
+        </div>
 
         {{-- PAPAR ERROR --}}
         @if ($errors->any())
@@ -120,18 +127,20 @@
 
                     {{-- TARIKH PEROLEHAN --}}
                     <div>
-                        <label class="font-semibold text-sm">Tarikh Perolehan *</label>
-                        <input type="text" id="tarikh_perolehan" name="tarikh_perolehan" required
-                            class="mt-1 w-full border rounded px-3 py-2"
-                            value="{{ old('tarikh_perolehan', \Carbon\Carbon::parse($asset->tarikh_perolehan)->format('d-m-Y')) }}">
-                    </div>
+                    <label class="font-semibold text-sm">Tarikh Perolehan</label>
+                    <input type="date"
+                        class="mt-1 w-full border rounded px-3 py-2 bg-gray-100 cursor-not-allowed"
+                        value="{{ optional($asset->tarikh_perolehan)->format('Y-m-d') }}"
+                        readonly>
+                        </div>
 
-                    {{-- USIA ASET --}}
+                    {{-- Usia Aset (Auto) --}}
                     <div>
                         <label class="font-semibold text-sm">Usia Aset (Auto)</label>
-                        <input type="text" id="usia_aset" name="usia_aset" readonly
-                            class="mt-1 w-full bg-gray-100 border rounded px-3 py-2"
-                            value="{{ $asset->usia_aset }}">
+                        <input type="text"
+                            class="mt-1 w-full border rounded px-3 py-2 bg-gray-100 cursor-not-allowed"
+                            value="{{ old('usia_aset') }}"
+                            readonly>
                     </div>
 
                     {{-- Harga --}}
@@ -238,13 +247,15 @@
                             value="{{ old('nama_pengguna', $asset->nama_pengguna) }}">
                     </div>
 
-                    {{-- Tarikh Penempatan --}}
+                   {{-- Tarikh Penempatan --}}
                     <div>
                         <label class="font-semibold text-sm">Tarikh Penempatan *</label>
-                        <input type="text" name="tarikh_penempatan"
+                        <input type="date"
+                            name="tarikh_penempatan"
                             class="mt-1 w-full border rounded px-3 py-2"
-                            value="{{ old('tarikh_penempatan', \Carbon\Carbon::parse($asset->tarikh_penempatan)->format('d-m-Y')) }}">
+                            value="{{ old('tarikh_penempatan', optional($asset->tarikh_penempatan)->format('Y-m-d')) }}">
                     </div>
+
             </div>
 
             {{-- ================================================================= --}}
@@ -260,29 +271,28 @@
             {{-- BUTTON --}}
             <div class="flex justify-end gap-4 mt-6">
 
-                <a href="{{ route('ict.assets.index') }}"
-                    class="px-4 py-2 bg-gray-300 hover:bg-gray-400 text-black rounded">
-                    Kembali
-                </a>
-
-                <button type="submit"
+                 <button type="submit"
                     class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded">
                     Kemaskini
                 </button>
+                <input type="hidden" name="status" value="{{ $asset->status }}">
             </div>
 
         </form>
     </div>
 
-    {{-- SCRIPT: AUTO KIRA USIA + AUTO UNIT --}}
-    <script>
-        // KIRA USIA BARU BILA TARIKH BERUBAH
-        const tarikhInput = document.getElementById('tarikh_perolehan');
-        const usiaField   = document.getElementById('usia_aset');
+{{-- SCRIPT: AUTO KIRA USIA + AUTO UNIT --}}
+<script>
+    // =====================================================
+    // KIRA USIA BARU (AUTO) - TARIKH PEROLEHAN TIDAK BOLEH UBAH
+    // =====================================================
+    const tarikhInput = document.getElementById('tarikh_perolehan');
+    const usiaField   = document.getElementById('usia_aset');
 
-        tarikhInput.addEventListener('change', function() {
+    if (tarikhInput && usiaField) {
+        tarikhInput.addEventListener('change', function () {
             let parts = this.value.split("-");
-            if(parts.length !== 3) return;
+            if (parts.length !== 3) return;
 
             const mula  = new Date(parts[2], parts[1] - 1, parts[0]);
             const today = new Date();
@@ -302,40 +312,64 @@
 
             usiaField.value = `${tahun} tahun ${bulan} bulan ${hari} hari`;
         });
+    }
 
-        // UNIT DROPDOWN BERGANTUNG BAHAGIAN
-        const unitList = {
-            "Bahagian Khidmat Pengurusan": [
-                "Unit Pentadbiran Am", "Unit ICT", "Unit Sumber Manusia",
-                "Unit Kewangan", "Unit Aset & Stor", "Unit Bencana",
-                "Unit Majlis dan Keraian"
-            ],
-            "Bahagian Pengurusan Tanah": [
-                "Unit Pelupusan Tanah", "Unit Pembangunan Tanah", "Unit Hasil",
-                "Unit Teknikal & Penguatkuasaan", "Unit Pendaftaran",
-                "Unit Pindahmilik & Lelong"
-            ],
-            "Bahagian Pembangunan": [
-                "Unit Pembangunan Masyarakat", "Unit Pembangunan Fizikal"
-            ]
-        };
+    // =====================================================
+    // UNIT DROPDOWN BERGANTUNG KEPADA BAHAGIAN
+    // (Boleh tukar penempatan semasa EDIT)
+    // =====================================================
+    const unitList = {
+        "Bahagian Khidmat Pengurusan": [
+            "Unit Pentadbiran Am",
+            "Unit ICT",
+            "Unit Sumber Manusia",
+            "Unit Kewangan",
+            "Unit Aset & Stor",
+            "Unit Bencana",
+            "Unit Majlis dan Keraian"
+        ],
+        "Bahagian Pengurusan Tanah": [
+            "Unit Pelupusan Tanah",
+            "Unit Pembangunan Tanah",
+            "Unit Hasil",
+            "Unit Teknikal & Penguatkuasaan",
+            "Unit Pendaftaran",
+            "Unit Pindahmilik & Lelong"
+        ],
+        "Bahagian Pembangunan": [
+            "Unit Pembangunan Masyarakat",
+            "Unit Pembangunan Fizikal"
+        ]
+    };
 
-        const bahagianDropdown = document.getElementById('bahagian');
-        const unitDropdown     = document.getElementById('unit');
+    const bahagianDropdown = document.getElementById('bahagian');
+    const unitDropdown     = document.getElementById('unit');
 
-        bahagianDropdown.addEventListener('change', function() {
-            const selected = this.value;
+    if (bahagianDropdown && unitDropdown) {
 
+        bahagianDropdown.addEventListener('change', function () {
+            const selectedBahagian = this.value;
+
+            // Reset unit setiap kali bahagian ditukar
             unitDropdown.innerHTML = '<option value="">-- Pilih Unit --</option>';
             unitDropdown.disabled = true;
 
-            if(unitList[selected]) {
-                unitDropdown.disabled = false;
-                unitList[selected].forEach(u => {
-                    unitDropdown.innerHTML += `<option value="${u}">${u}</option>`;
+            // Jika bahagian ada unit → populate
+            if (unitList.hasOwnProperty(selectedBahagian)) {
+                unitList[selectedBahagian].forEach(unit => {
+                    const option = document.createElement('option');
+                    option.value = unit;
+                    option.textContent = unit;
+                    unitDropdown.appendChild(option);
                 });
+
+                unitDropdown.disabled = false;
             }
         });
-    </script>
+
+    }
+    document.addEventListener('DOMContentLoaded', populateUnit);
+</script>
+
 
 </x-app-layout>

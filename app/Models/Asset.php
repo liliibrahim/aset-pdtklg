@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use App\Models\AssetMovement; 
+use Carbon\Carbon;
 
 class Asset extends Model
 {
@@ -70,4 +71,18 @@ public function currentMovement()
                 ->whereNull('tarikh_tamat')
                 ->latestOfMany('tarikh_mula'); // ambil tarikh_mula paling baru
 }
+
+// app/Models/Asset.php
+public function complaints()
+{
+    return $this->hasMany(Complaint::class);
+}
+
+public function getUsiaAsetAttribute()
+{
+    return $this->tarikh_perolehan
+        ? Carbon::parse($this->tarikh_perolehan)->age . ' tahun'
+        : '-';
+}
+
 }

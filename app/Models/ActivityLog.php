@@ -6,14 +6,14 @@ use Illuminate\Database\Eloquent\Model;
 
 class ActivityLog extends Model
 {
-    protected $table = 'activity_logs';
-
     protected $fillable = [
-        'module',
-        'action',
         'user_id',
-        'asset_id',
-        'description',
+        'aktiviti',
+        'modul',
+        'tindakan',
+        'aset',
+        'rekod',
+        'asset_id',   // optional (kalau masih guna relasi)
     ];
 
     public function user()
