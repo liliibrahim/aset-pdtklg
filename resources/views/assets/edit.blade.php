@@ -241,11 +241,22 @@
 
                     {{-- Nama Pengguna --}}
                     <div>
-                        <label class="font-semibold text-sm">Nama Pengguna</label>
-                        <input type="text" name="nama_pengguna"
-                            class="mt-1 w-full border rounded px-3 py-2"
-                            value="{{ old('nama_pengguna', $asset->nama_pengguna) }}">
-                    </div>
+    <label class="font-semibold text-sm">Nama Pengguna</label>
+
+    <select name="user_id"
+            class="mt-1 w-full border rounded px-3 py-2 form-control"
+            required>
+        <option value="">-- Pilih Pengguna --</option>
+
+        @foreach ($users as $user)
+            <option value="{{ $user->id }}"
+                {{ old('user_id', $asset->user_id ?? '') == $user->id ? 'selected' : '' }}>
+                {{ $user->name }}
+            </option>
+        @endforeach
+    </select>
+</div>
+
 
                    {{-- Tarikh Penempatan --}}
                     <div>

@@ -11,11 +11,8 @@ use Illuminate\Support\Facades\DB;
 
 class IctReportController extends Controller
 {
-    /**
-     * =====================================================
-     * LAPORAN ADUAN ICT (SCREEN)
-     * =====================================================
-     */
+    // LAPORAN ADUAN ICT (SCREEN)
+     
     public function aduan(Request $request)
     {
         $status = $request->input('status');
@@ -50,11 +47,8 @@ class IctReportController extends Controller
         ));
     }
 
-    /**
-     * =====================================================
-     * LAPORAN ASET ROSAK (SCREEN)
-     * =====================================================
-     */
+    // LAPORAN ASET ROSAK (SCREEN)
+     
     public function asetRosak(Request $request)
     {
         $bahagian = $request->input('bahagian');
@@ -94,12 +88,8 @@ class IctReportController extends Controller
         ));
     }
 
-    /**
-     * =====================================================
-     * LAPORAN ASET MENGIKUT USIA (SCREEN)
-     * LOGIK B (TIDAK BERTINDIH)
-     * =====================================================
-     */
+    // LAPORAN ASET MENGIKUT USIA (SCREEN)
+    
     public function asetUsang(Request $request)
     {
         $tahap = (int) $request->get('usia'); // 5,7,8
@@ -125,11 +115,8 @@ class IctReportController extends Controller
         return view('LaporanMain.aset_usang', compact('assets', 'tahap'));
     }
 
-    /**
-     * =====================================================
-     * PDF LAPORAN ADUAN ICT
-     * =====================================================
-     */
+    // PDF LAPORAN ADUAN ICT
+    
     public function aduanPdf()
     {
         $aduans = MaintenanceRequest::with('asset')
@@ -141,29 +128,24 @@ class IctReportController extends Controller
             ->stream('Laporan_Aduan_ICT.pdf');
     }
 
-    /**
-     * =====================================================
-     * PDF LAPORAN ASET ROSAK
-     * =====================================================
-     */
-    public function asetRosakPdf()
-    {
-        $assets = Asset::where('status', 'rosak')->get();
-        $jumlahRosak = $assets->count();
+    // PDF LAPORAN ASET ROSAK
+     
+    public function asetRosakPdf(Request $request)
+{
+    $assets = Asset::where('status', 'Rosak')->get();
 
-        return Pdf::loadView(
-            'LaporanMain.pdf.aset_rosak',
-            compact('assets', 'jumlahRosak')
-        )
-        ->setPaper('A4', 'landscape')
-        ->stream('Laporan_Aset_Rosak.pdf');
-    }
+    $jumlahRosak = $assets->count();
 
-    /**
-     * =====================================================
-     * PDF LAPORAN ASET MENGIKUT USIA (LOGIK B)
-     * =====================================================
-     */
+    return Pdf::loadView(
+        'LaporanMain.pdf.aset_rosak',
+        compact('assets', 'jumlahRosak')
+    )->setPaper('A4', 'landscape')
+    ->stream('laporan-aset-rosak.pdf');
+}
+
+    
+    // PDF LAPORAN ASET MENGIKUT USIA
+     
     public function asetUsangPdf(Request $request)
     {
         $tahap = (int) $request->get('tahap');

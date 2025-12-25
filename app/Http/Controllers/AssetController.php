@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\DB;
 use App\Models\Bahagian;
 use App\Models\Unit;
 use Carbon\Carbon;
+use App\Models\User;
 
 
 class AssetController extends Controller
@@ -22,7 +23,7 @@ class AssetController extends Controller
      */
     public function index(Request $request)
     {
-        $query = Asset::query();
+        $query = Asset::orderBy('created_at', 'desc');
 
         $assets = $query->get()->map(function ($asset) {
     $asset->usia_aset = $asset->tahun_perolehan
@@ -169,9 +170,10 @@ if ($request->filled('kategori') && !$request->filled('bahagian')) {
      * CREATE
      */
     public function create()
-    {
-        return view('assets.create');
-    }
+{
+    $users = User::orderBy('name')->get();
+    return view('assets.create', compact('users'));
+}
 
     /**
      * STORE
@@ -198,8 +200,13 @@ if ($request->filled('kategori') && !$request->filled('bahagian')) {
             'tarikh_pelupusan'   => 'nullable|date',
             'rujukan_pelupusan'  => 'nullable|string',
             'catatan'            => 'nullable|string',
+            'user_id' => 'required|exists:users,id',
         ]);
 
+        $user = User::findOrFail($request->user_id);
+
+        $validated['user_id'] = $user->id;
+        $validated['nama_pengguna'] = $user->name;
         $validated['status'] = 'Aktif';
 
         $asset = Asset::create($validated);
@@ -229,13 +236,21 @@ if ($request->filled('kategori') && !$request->filled('bahagian')) {
             'sumber_perolehan'  => 'required|string',
             'bahagian'          => 'nullable|string',
             'unit'              => 'nullable|string',
+            'tarikh_penempatan' => 'nullable|date',
             'nama_pengguna'     => 'nullable|string',
             'tarikh_pelupusan'  => 'nullable|date',
             'rujukan_pelupusan' => 'nullable|string',
             'catatan'           => 'nullable|string',
+            'user_id' => 'nullable|exists:users,id',
         ]);
 
         $original = $asset->getOriginal();
+
+        $user = User::findOrFail($request->user_id);
+
+        $validated['user_id'] = $user->id;
+        $validated['nama_pengguna'] = $user->name;
+
         $asset->update($validated);
 
         // LOG AKTIVITI (SAH & BETUL)
@@ -259,7 +274,9 @@ if ($request->filled('kategori') && !$request->filled('bahagian')) {
                 'bahagian'      => $asset->bahagian,
                 'unit'          => $asset->unit,
                 'nama_pengguna' => $asset->nama_pengguna,
-                'tarikh_mula'   => now(),
+                'tarikh_mula'   => $validated['tarikh_penempatan']
+                                ?? $asset->tarikh_penempatan
+                                ?? now(),
                 'catatan'       => 'Aset ditanda sebagai ROSAK',
             ]);
             return;
@@ -285,7 +302,9 @@ if ($request->filled('kategori') && !$request->filled('bahagian')) {
                 'bahagian'      => $validated['bahagian'] ?? null,
                 'unit'          => $validated['unit'] ?? null,
                 'nama_pengguna' => $validated['nama_pengguna'] ?? null,
-                'tarikh_mula'   => now(),
+                'tarikh_mula'   => $validated['tarikh_penempatan']
+                                ?? $asset->tarikh_penempatan
+                                ?? now(),
                 'catatan'       => 'Perubahan penempatan aset',
             ]);
         }
@@ -294,10 +313,11 @@ if ($request->filled('kategori') && !$request->filled('bahagian')) {
     /**
      * EDIT
      */
-    public function edit(Asset $asset)
-    {
-        return view('assets.edit', compact('asset'));
-    }
+            public function edit(Asset $asset)
+        {
+            $users = User::orderBy('name')->get();
+            return view('assets.edit', compact('asset', 'users'));
+        }
 
 
     /**

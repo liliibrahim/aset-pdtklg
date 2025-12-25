@@ -2,92 +2,111 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Complaint;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use App\Models\MaintenanceRequest;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class ICTAduanController extends Controller
 {
-
+    /**
+     * =====================================================
+     * SENARAI ADUAN (OPERASI ICT)
+     * URL: /ict/aduan
+     * =====================================================
+     */
     public function index(Request $request)
     {
-        $query = MaintenanceRequest::with(['asset', 'user', 'complaint']);
+        $status = $request->get('status');
 
-        if ($request->status) {
-            $query->where('status', $request->status);
+        // Mapping status UI → DB
+        $statusMap = [
+            'baru'            => 'Menunggu Tindakan ICT',
+            'dalam_tindakan'  => 'Dalam Tindakan',
+            'selesai'         => 'Selesai',
+        ];
+
+        $aduans = Complaint::with(['asset', 'user'])
+            ->when($status && isset($statusMap[$status]), function ($q) use ($status, $statusMap) {
+                $q->where('status', $statusMap[$status]);
+            })
+            ->orderBy('created_at', 'desc')
+            ->paginate(10)
+            ->withQueryString();
+
+        return view('aduan.index', compact('aduans', 'status'));
+    }
+
+    /**
+     * =====================================================
+     * KEMASKINI TINDAKAN ICT
+     * =====================================================
+     */
+    public function update(Request $request, Complaint $aduan)
+    {
+        $request->validate([
+            'tindakan_ict' => 'required|string',
+        ]);
+
+        if ($request->tindakan_ict === 'selesai_dibaiki') {
+            $statusBaru = 'Selesai';
+
+            $aduan->asset?->update([
+                'status' => 'Aktif',
+            ]);
+        } else {
+            $statusBaru = 'Dalam Tindakan';
+
+            $aduan->asset?->update([
+                'status' => 'Rosak',
+            ]);
         }
 
-        $aduans = $query->latest()->paginate(10);
+        $aduan->update([
+            'tindakan_ict' => $request->tindakan_ict,
+            'status'       => $statusBaru,
+            'ict_id'       => Auth::id(),
+        ]);
 
-        return view('aduan.index', compact('aduans'));
-    }
-    public function show(MaintenanceRequest $aduan)
-    {
-        return view('aduan.show', compact('aduan'));
+        return back()->with('success', 'Tindakan aduan berjaya dikemaskini.');
     }
 
-  
-    public function update(Request $request, MaintenanceRequest $aduan)
+    /**
+     * =====================================================
+     * LAPORAN ADUAN (SCREEN)
+     * URL: /ict/laporan/aduan
+     * =====================================================
+     */
+    public function laporan(Request $request)
 {
-    $request->validate([
-        'tindakan_ict' => 'required|string',
-    ]);
+    $ringkasan = [
+        'jumlah' => Complaint::count(),
+        'baru'   => Complaint::where('status', 'Menunggu Tindakan ICT')->count(),
+        'dalam_tindakan' => Complaint::where('status', 'Dalam Tindakan')->count(),
+        'selesai' => Complaint::where('status', 'Selesai')->count(),
+    ];
 
-    // Status sedia ada
-    $statusICT  = $aduan->status;
-    $statusUser = $aduan->complaint->status;
+    $aduans = Complaint::with('asset')
+        ->orderBy('created_at', 'desc')
+        ->paginate(10);
 
-    /*
-    |--------------------------------------------------
-    | KAWAL PERUBAHAN STATUS
-    |--------------------------------------------------
-    | - Aduan kekal 'baru' sehingga tindakan sebenar
-    | - Hanya tindakan tertentu menukar status
-    */
-
-    // 1️⃣ Jika selesai
-    if ($request->tindakan_ict === 'selesai_dibaiki') {
-
-        $statusICT  = 'selesai';
-        $statusUser = 'Selesai';
-        $aduan->asset->update([
-    'status' => 'Aktif'
-]);
-
-    }
-
-    // 2️⃣ Jika mula tindakan sebenar
-    elseif (
-        $aduan->status === 'baru' &&
-        in_array($request->tindakan_ict, [
-            'pembaikan_sedang_dijalankan',
-            'menunggu_alat_ganti',
-            'menunggu_vendor',
-            'tidak_dapat_dibaiki',
-            
-        ])
-        
-    ) $aduan->asset->update([
-    'status' => 'Rosak'
-]);{
-
-        $statusICT  = 'dalam_tindakan';
-        $statusUser = 'Dalam Tindakan';
-
-    }
-
-    // 3️⃣ Selain itu → status KEKAL (contoh: sedang_disemak)
-
-    $aduan->update([
-        'tindakan_ict' => $request->tindakan_ict,
-        'status'       => $statusICT,
-        'ict_id'       => Auth::id(),
-    ]);
-
-    $aduan->complaint->update([
-        'status' => $statusUser,
-    ]);
-
-    return back()->with('success', 'Tindakan aduan berjaya dikemaskini.');
+    return view('LaporanMain.aduan', compact('aduans', 'ringkasan'));
 }
+
+    /**
+     * =====================================================
+     * LAPORAN ADUAN (PDF)
+     * =====================================================
+     */
+    public function laporanPdf(Request $request)
+    {
+        $aduans = Complaint::with('asset')
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        $pdf = Pdf::loadView('LaporanMain.pdf.aduan', compact('aduans'))
+            ->setPaper('a4', 'landscape');
+
+        return $pdf->stream('laporan-aduan-ict.pdf');
+    }
 }

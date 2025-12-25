@@ -112,15 +112,11 @@ class RegisteredUserController extends Controller
         | - Admin daftar user → TIDAK auto login
         |--------------------------------------------------------------------------
         */
-        if (!Auth::check()) {
-            Auth::login($user);
-           return redirect()
-    ->route('admin.register')
-    ->with('success', 'Pengguna berjaya ditambah. Sila tambah pengguna lain.');
-        }
+        
+        
 
-        // Admin daftar pengguna → kembali ke senarai pengguna
-        return redirect()->route('admin.users.index')
-            ->with('success', 'Pengguna berjaya didaftarkan.');
-    }
-}
+        // Redirect user awam ke dashboard masing-masing
+        return redirect()->route('dashboard')
+            ->with('success', 'Pendaftaran berjaya. Selamat datang!');
+            }
+        }

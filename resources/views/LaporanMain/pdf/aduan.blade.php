@@ -1,148 +1,103 @@
-<!DOCTYPE html>
-<html lang="ms">
-<head>
-    <meta charset="UTF-8">
-    <title>Laporan Aduan ICT</title>
+<x-app-layout>
+<div class="px-6 py-6">
 
-    <style>
-        body {
-            font-family: DejaVu Sans, sans-serif;
-            font-size: 11px;
-            color: #000;
-        }
+    <h1 class="text-xl font-bold mb-4">Laporan Aduan</h1>
 
-        .header {
-            text-align: center;
-            margin-bottom: 10px;
-        }
+    {{-- RINGKASAN --}}
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
 
-        .header h3 {
-            margin: 0;
-            font-size: 14px;
-            text-transform: uppercase;
-        }
+        <div class="bg-white p-4 rounded shadow">
+            <div class="text-xs text-gray-500">Jumlah Aduan</div>
+            <div class="text-2xl font-bold">{{ $ringkasan['jumlah'] }}</div>
+        </div>
 
-        .header p {
-            margin: 2px 0;
-            font-size: 11px;
-        }
+        <div class="bg-white p-4 rounded shadow">
+            <div class="text-xs text-gray-500">Baru</div>
+            <div class="text-2xl font-bold text-blue-600">{{ $ringkasan['baru'] }}</div>
+        </div>
 
-        .meta {
-            margin-bottom: 10px;
-            font-size: 10px;
-        }
+        <div class="bg-white p-4 rounded shadow">
+            <div class="text-xs text-gray-500">Dalam Tindakan</div>
+            <div class="text-2xl font-bold text-orange-600">
+                {{ $ringkasan['dalam_tindakan'] }}
+            </div>
+        </div>
 
-        table {
-            width: 100%;
-            border-collapse: collapse;
-        }
+        <div class="bg-white p-4 rounded shadow">
+            <div class="text-xs text-gray-500">Selesai</div>
+            <div class="text-2xl font-bold text-green-600">
+                {{ $ringkasan['selesai'] }}
+            </div>
+        </div>
 
-        th, td {
-            border: 1px solid #000;
-            padding: 4px;
-            vertical-align: top;
-        }
-
-        th {
-            background-color: #f0f0f0;
-            text-align: left;
-        }
-
-        .text-center {
-            text-align: center;
-        }
-
-        .badge {
-            padding: 2px 6px;
-            border-radius: 4px;
-            font-size: 9px;
-            color: #fff;
-            display: inline-block;
-        }
-
-        .baru { background: #2563eb; }          /* biru */
-        .dalam_tindakan { background: #d97706; }/* oren */
-        .selesai { background: #16a34a; }        /* hijau */
-
-        .footer {
-            margin-top: 15px;
-            font-size: 10px;
-        }
-    </style>
-</head>
-<body>
-
-    {{-- HEADER --}}
-    <div class="header">
-        <h3>Pejabat Daerah dan Tanah Klang</h3>
-        <p>Sistem Pemantauan Aset ICT</p>
-        <p><strong>Laporan Aduan ICT</strong></p>
     </div>
 
-    {{-- MAKLUMAT CETAK --}}
-    <div class="meta">
-        <p>Tarikh Cetakan: {{ now()->format('d/m/Y') }}</p>
-        <p>Jumlah Aduan: {{ $aduans->count() }}</p>
+    {{-- FILTER STATUS --}}
+    <div class="flex gap-2 mb-4">
+        <a href="{{ route('ict.laporan.aduan') }}"
+           class="px-4 py-2 border rounded">Semua</a>
+
+        <a href="{{ route('ict.laporan.aduan',['status'=>'baru']) }}"
+           class="px-4 py-2 border rounded">Baru</a>
+
+        <a href="{{ route('ict.laporan.aduan',['status'=>'dalam_tindakan']) }}"
+           class="px-4 py-2 border rounded">Dalam Tindakan</a>
+
+        <a href="{{ route('ict.laporan.aduan',['status'=>'selesai']) }}"
+           class="px-4 py-2 border rounded">Selesai</a>
+
+        <a href="{{ route('ict.laporan.aduan.pdf', request()->query()) }}"
+           target="_blank"
+           class="ml-auto px-4 py-2 bg-red-600 text-white rounded">
+            Cetak PDF
+        </a>
     </div>
 
-    {{-- JADUAL ADUAN --}}
-    <table>
-        <thead>
-            <tr>
-                <th class="text-center">Bil</th>
-                <th>No Aduan</th>
-                <th>Tarikh Aduan</th>
-                <th>Peralatan</th>
-                <th>Masalah</th>
-                <th>Bahagian</th>
-                <th>Unit</th>
-                <th>Status</th>
-            </tr>
-        </thead>
-        <tbody>
-            @forelse($aduans as $i => $a)
+    {{-- TABLE --}}
+    <div class="bg-white rounded shadow overflow-x-auto">
+        <table class="w-full text-sm">
+            <thead class="bg-gray-100">
                 <tr>
-                    <td class="text-center">{{ $i + 1 }}</td>
-                    <td>{{ $a->id }}</td>
-                    <td class="text-center">
-                        {{ $a->created_at
-                            ? $a->created_at->format('d/m/Y')
-                            : '-' }}
+                    <th class="px-4 py-2">Bil</th>
+                    <th class="px-4 py-2">Aset</th>
+                    <th class="px-4 py-2">Aduan</th>
+                    <th class="px-4 py-2">Status</th>
+                    <th class="px-4 py-2">Tarikh</th>
+                </tr>
+            </thead>
+            <tbody>
+                @forelse($aduans as $i => $a)
+                <tr class="border-t">
+                    <td class="px-4 py-2">
+                        {{ $aduans->firstItem() + $i }}
                     </td>
-                    <td>
-                        {{ $a->asset->kategori ?? '-' }}
-                        <br>
-                        <small>
-                            {{ $a->asset->jenama ?? '' }}
-                            {{ $a->asset->model ?? '' }}
-                        </small>
+                    <td class="px-4 py-2">
+                        {{ $a->asset->no_siri ?? '-' }}
                     </td>
-                    <td>{{ $a->deskripsi_masalah ?? '-' }}</td>
-                    <td>{{ $a->asset->bahagian ?? '-' }}</td>
-                    <td>{{ $a->asset->unit ?? '-' }}</td>
-                    <td class="text-center">
-                        <span class="badge {{ $a->status }}">
-                            {{ ucfirst(str_replace('_', ' ', $a->status)) }}
-                        </span>
+                    <td class="px-4 py-2">
+                        {{ $a->deskripsi_masalah ?? '-' }}
+                    </td>
+                    <td class="px-4 py-2">
+                        {{ $a->status }}
+                    </td>
+                    <td class="px-4 py-2">
+                        {{ $a->created_at->format('d/m/Y') }}
                     </td>
                 </tr>
-            @empty
+                @empty
                 <tr>
-                    <td colspan="8" class="text-center">
-                        Tiada rekod aduan.
+                    <td colspan="5" class="text-center py-4">
+                        Tiada rekod aduan
                     </td>
                 </tr>
-            @endforelse
-        </tbody>
-    </table>
+                @endforelse
+            </tbody>
+        </table>
 
-    {{-- FOOTER --}}
-    <div class="footer">
-        <p>
-            Dokumen ini dijana secara automatik oleh Sistem Pemantauan Aset ICT
-            dan tidak memerlukan tandatangan.
-        </p>
+        <div class="p-4">
+            {{ $aduans->links() }}
+        </div>
     </div>
 
-</body>
-</html>
+</div>
+</x-app-layout>

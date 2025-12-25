@@ -149,6 +149,23 @@
         </div>
     </div>
 
+    {{-- FLASH MESSAGE: SUCCESS --}}
+@if (session('success'))
+    <div style="
+        max-width: 1200px;
+        margin: 20px auto 0;
+        padding: 12px 20px;
+        background: #ecfdf5;
+        border: 1px solid #34d399;
+        color: #065f46;
+        border-radius: 10px;
+        font-size: 14px;
+        font-weight: 500;
+    ">
+        {{ session('success') }}
+    </div>
+@endif
+
     {{-- HERO SECTION --}}
     <section class="hero">
 

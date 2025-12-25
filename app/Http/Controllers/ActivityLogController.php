@@ -12,9 +12,9 @@ class ActivityLogController extends Controller
         $this->middleware(['auth', 'role:admin']);
     }
 
-    /**
-     * Paparan Senarai Semua Log Aktiviti (HTML)
-     */
+    
+    //Paparan Senarai Semua Log Aktiviti (HTML)
+    
     public function index()
     {
         $logs = ActivityLog::with('user')
@@ -24,9 +24,9 @@ class ActivityLogController extends Controller
         return view('activity_logs.index', compact('logs'));
     }
 
-    /**
-     * Cetak Laporan PDF Log Aktiviti
-     */
+    
+    // Cetak Laporan PDF Log Aktiviti
+    
     public function pdf()
     {
         $logs = ActivityLog::with('user')

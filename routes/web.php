@@ -41,9 +41,9 @@ require __DIR__ . '/auth.php';
 Route::middleware(['auth'])->group(function () {
 
     /*
-    |----------------------------------------------------------------------
+    |--------------------------------------------------------------------------
     | AUTO REDIRECT DASHBOARD IKUT ROLE
-    |----------------------------------------------------------------------
+    |--------------------------------------------------------------------------
     */
     Route::get('/dashboard', function () {
         return match (Auth::user()->role) {
@@ -55,80 +55,70 @@ Route::middleware(['auth'])->group(function () {
     })->name('dashboard');
 
     /*
-    |----------------------------------------------------------------------
-    | ADMIN ROUTES (TAMBAHAN BARU – TIDAK GANGGU YANG LAMA)
-    |----------------------------------------------------------------------
+    |--------------------------------------------------------------------------
+    | ADMIN ROUTES
+    |--------------------------------------------------------------------------
     */
     Route::middleware(['role:admin'])
         ->prefix('admin')
         ->name('admin.')
         ->group(function () {
 
-            // Dashboard Admin
             Route::get('/dashboard', [AdminDashboardController::class, 'index'])
                 ->name('dashboard');
 
-            // Log Aktiviti Sistem
             Route::get('/activity-logs', [ActivityLogController::class, 'index'])
                 ->name('activity-logs.index');
 
             Route::get('/activity-logs/pdf', [ActivityLogController::class, 'pdf'])
                 ->name('activity-logs.pdf');
 
-            // ================== PENGGUNA ==================
+            // Pengguna
+            Route::get('/users', [UserController::class, 'index'])->name('users.index');
+            Route::get('/users/admins', [UserController::class, 'admins'])->name('users.admins');
+            Route::get('/users/ict', [UserController::class, 'ict'])->name('users.ict');
 
-// Senarai semua pengguna
-Route::get('/users', [UserController::class, 'index'])
-    ->name('users.index');
+            Route::get('/users/{user}/edit', [UserController::class, 'edit'])
+                ->name('users.edit');
 
-// Senarai Pentadbir Sistem
-Route::get('/users/admins', [UserController::class, 'admins'])
-    ->name('users.admins');
+            Route::put('/users/{user}', [UserController::class, 'update'])
+                ->name('users.update');
 
-// Senarai Pegawai ICT
-Route::get('/users/ict', [UserController::class, 'ict'])
-    ->name('users.ict');
+            Route::get('/users/create', [RegisteredUserController::class, 'create'])
+                ->name('users.create');
 
-// Edit & kemaskini pengguna
-Route::get('/users/{user}/edit', [UserController::class, 'edit'])
-    ->name('users.edit');
-
-Route::put('/users/{user}', [UserController::class, 'update'])
-    ->name('users.update');
-
-    Route::get('/users/create', [RegisteredUserController::class, 'create'])
-            ->name('users.create');
-
-        Route::post('/users', [RegisteredUserController::class, 'store'])
-            ->name('users.store');
-
-                   });
+            Route::post('/users', [RegisteredUserController::class, 'store'])
+                ->name('users.store');
+        });
 
     /*
-    |----------------------------------------------------------------------
-    | ICT ROUTES (KEKAL – TIDAK DIUBAH)
-    |----------------------------------------------------------------------
+    |--------------------------------------------------------------------------
+    | ICT ROUTES
+    |--------------------------------------------------------------------------
     */
     Route::middleware(['role:ict'])
         ->prefix('ict')
         ->name('ict.')
         ->group(function () {
 
-            // Dashboard
+            /*
+            | DASHBOARD ICT
+            */
             Route::get('/dashboard', [DashboardController::class, 'ict'])
                 ->name('dashboard');
 
             Route::get('/dashboard/filter', [DashboardController::class, 'filter'])
                 ->name('dashboard.filter');
 
-            // Asset Management
+            /*
+            | ASSET MANAGEMENT LAPORAN A DAN B KEWPA
+            */
             Route::resource('assets', AssetController::class)
                 ->only(['index', 'create', 'store', 'edit', 'update', 'show']);
 
             Route::delete('/assets/{asset}', [AssetController::class, 'destroy'])
                 ->name('assets.destroy');
 
-            // Asset Reports (A & B)
             Route::get('/assets/{id}/laporan-a', [AssetReportController::class, 'laporanA'])
                 ->name('assets.laporanA');
 
@@ -136,56 +126,65 @@ Route::put('/users/{user}', [UserController::class, 'update'])
                 ->name('assets.laporanB');
 
             /*
-            |--------------------------------------------------------------
-            | ICT REPORTS (WEB + PDF)
-            |--------------------------------------------------------------
-            */
-            Route::prefix('laporan')->name('laporan.')->group(function () {
-
-                Route::get('/aduan', [IctReportController::class, 'aduan'])
-                    ->name('aduan');
-
-                Route::get('/aset-rosak', [IctReportController::class, 'asetRosak'])
-                    ->name('aset_rosak');
-
-                Route::get('/aset_usang', [IctReportController::class, 'asetUsang'])
-                    ->name('aset_usang');
-
-                // PDF
-                Route::get('/aduan/pdf', [IctReportController::class, 'aduanPdf'])
-                    ->name('aduan.pdf');
-
-                Route::get('/aset-rosak/pdf', [IctReportController::class, 'asetRosakPdf'])
-                    ->name('aset_rosak.pdf');
-
-                Route::get('/aset_usang/pdf', [IctReportController::class, 'asetUsangPdf'])
-                    ->name('aset_usang.pdf');
-            });
-
-            /*
-            |--------------------------------------------------------------
-            | ICT ADUAN MANAGEMENT
-            |--------------------------------------------------------------
+            |--------------------------------------------------------------------------
+            | ICT ADUAN (OPERASI HARIAN)
+            | URL: /ict/aduan
+            |--------------------------------------------------------------------------
             */
             Route::get('/aduan', [ICTAduanController::class, 'index'])
                 ->name('aduan.index');
 
-            Route::get('/aduan/{aduan}', [ICTAduanController::class, 'show'])
-                ->name('aduan.show');
-
             Route::put('/aduan/{aduan}', [ICTAduanController::class, 'update'])
                 ->name('aduan.update');
 
-            // AJAX
+            /*
+            |--------------------------------------------------------------------------
+            | ICT LAPORAN (ADUAN, ASET ROSAK, ASET USANG)
+            |--------------------------------------------------------------------------
+            | URL:
+            | /ict/laporan/aduan
+            | /ict/laporan/aset-rosak
+            | /ict/laporan/aset-usang
+            |--------------------------------------------------------------------------
+            */
+            Route::prefix('laporan')
+                ->name('laporan.')
+                ->group(function () {
+
+                    // Laporan Aduan
+                    Route::get('/aduan', [ICTAduanController::class, 'laporan'])
+                        ->name('aduan');
+
+                    Route::get('/aduan/pdf', [ICTAduanController::class, 'laporanPdf'])
+                        ->name('aduan.pdf');
+
+                    // Laporan Aset Rosak
+                    Route::get('/aset-rosak', [IctReportController::class, 'asetRosak'])
+                        ->name('aset_rosak');
+                    
+                    Route::get('/aset-rosak/pdf', [IctReportController::class, 'asetRosakPdf'])
+                        ->name('aset_rosak.pdf');
+
+                    // Laporan Aset Usang
+                    Route::get('/aset_usang', [IctReportController::class, 'asetUsang'])
+                        ->name('aset_usang');                 
+                   
+                    Route::get('/aset-usang/pdf', [IctReportController::class, 'asetUsangPdf'])
+                    ->name('aset_usang.pdf');
+                                });
+
+            /*
+            | AJAX
+            */
             Route::get('/get-units-by-bahagian',
                 [DashboardController::class, 'getUnitsByBahagian']
             )->name('getUnitsByBahagian');
         });
 
     /*
-    |----------------------------------------------------------------------
-    | USER ROUTES (KEKAL – TIDAK DIUBAH)
-    |----------------------------------------------------------------------
+    |--------------------------------------------------------------------------
+    | USER ROUTES
+    |--------------------------------------------------------------------------
     */
     Route::middleware(['role:user'])
         ->prefix('user')
@@ -203,14 +202,13 @@ Route::put('/users/{user}', [UserController::class, 'update'])
         });
 
     /*
-    |----------------------------------------------------------------------
-    | API (KEKAL)
-    |----------------------------------------------------------------------
+    |--------------------------------------------------------------------------
+    | API
+    |--------------------------------------------------------------------------
     */
     Route::get('/api/units/{bahagian}', function ($bahagianId) {
         return \App\Models\Unit::where('bahagian_id', $bahagianId)
             ->orderBy('nama')
             ->get();
     });
-
 });

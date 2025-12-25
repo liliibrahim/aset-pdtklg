@@ -184,10 +184,9 @@ class DashboardController extends Controller
         abort(403, 'Profil pengguna tidak lengkap');
     }
 
-    // Query aset di bawah tanggungjawab pengguna
-    $asetQuery = Asset::where('bahagian', $user->bahagian->nama)
-        ->where('unit', $user->unit->nama)
-        ->with(['complaints.maintenanceRequest']);
+// Query aset di bawah tanggungjawab pengguna (ikut user_id)
+$asetQuery = Asset::where('user_id', $user->id)
+    ->with(['complaints.maintenanceRequest']);
 
     // Statistik (dikira di DB – lebih efisien)
     $totalAset = (clone $asetQuery)->count();

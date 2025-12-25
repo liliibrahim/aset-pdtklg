@@ -250,12 +250,22 @@
                     </div>
 
                     {{-- Nama Pengguna --}}
-                    <div>
-                        <label class="font-semibold text-sm">Nama Pengguna</label>
-                        <input type="text" name="nama_pengguna"
-                            class="mt-1 w-full border rounded px-3 py-2"
-                            value="{{ old('nama_pengguna') }}">
-                    </div>
+                <div>
+                    <label class="font-semibold text-sm">Nama Pengguna</label>
+                    <select name="user_id"
+                        class="mt-1 w-full border rounded px-3 py-2">
+
+                        <option value="">-- Pilih Pengguna --</option>
+
+                        @foreach ($users as $user)
+                            <option value="{{ $user->id }}"
+                                @selected(old('user_id') == $user->id)>
+                                {{ $user->name }} ({{ $user->email }})
+                            </option>
+                        @endforeach
+
+                    </select>
+                </div>
 
                     {{-- Tarikh Penempatan --}}
                     <div>
