@@ -1,9 +1,10 @@
-{{-- resources/views/laporan/laporanA.blade.php --}}
-<!DOCTYPE html>
-<html>
+{{-- LAPORAN ASET ICT – BAHAGIAN A (PDF) --}}
+
 <head>
     <meta charset="utf-8">
     <title>Laporan Aset ICT – Bahagian A</title>
+    
+    {{-- Basic untuk cetakan PDF --}}
     <style>
         body { font-family: DejaVu Sans, sans-serif; font-size: 11px; }
         table { border-collapse: collapse; width: 100%; }
@@ -14,48 +15,62 @@
 </head>
 <body>
 
+    {{-- Tajuk laporan rasmi --}}
     <h3 style="text-align:center; margin-bottom:10px;">
         PEJABAT DAERAH DAN TANAH KLANG<br>
         LAPORAN MAKLUMAT ASET ICT (BAHAGIAN A)
     </h3>
 
+    {{-- Paparan maklumat utama aset --}}
     <table>
         <tr class="no-border">
             <td colspan="4"><strong>Bahagian / Cawangan:</strong> {{ $asset->bahagian }}</td>
         </tr>
 
+        {{-- Penanda seksyen Bahagian A --}}
         <tr>
             <td colspan="4" class="section-title">BAHAGIAN A</td>
         </tr>
 
+        {{-- Maklumat kategori dan pengenalan aset --}}
         <tr>
             <td style="width:25%;">Kategori Aset</td>
             <td style="width:25%;">{{ $asset->kategori }}</td>
             <td style="width:25%;">Kod Nasional</td>
             <td style="width:25%;"></td>
         </tr>
+
+        {{-- Butiran jenama dan model --}}
         <tr>
             <td>Jenis / Jenama / Model</td>
             <td colspan="3">{{ $asset->jenama }} {{ $asset->model }}</td>
         </tr>
+
+        {{-- Nombor siri aset --}}
         <tr>
             <td>No. Siri / No. Siri Pendaftaran</td>
             <td>{{ $asset->no_siri }}</td>
             <td>No. Siri Sub</td>
             <td>{{ $asset->no_siri_sub }}</td>
         </tr>
+
+        {{-- Maklumat perolehan --}}
         <tr>
             <td>Harga Perolehan Asal (RM)</td>
             <td>{{ number_format($asset->harga, 2) }}</td>
             <td>Tarikh Perolehan</td>
             <td>{{ optional($asset->tarikh_perolehan)->format('d-m-Y') }}</td>
         </tr>
+
+        {{-- Usia dan jaminan aset --}}
         <tr>
             <td>Usia Aset</td>
             <td>{{ $asset->usia_aset }}</td>
             <td>Tempoh Jaminan</td>
             <td></td>
         </tr>
+
+        {{-- Sumber dan pembekal --}}
         <tr>
             <td>Sumber Perolehan</td>
             <td colspan="3">{{ $asset->sumber_perolehan }}</td>
@@ -64,6 +79,8 @@
             <td>Nama Pembekal / Alamat</td>
             <td colspan="3">{{ $asset->pembekal }}</td>
         </tr>
+
+        {{-- Catatan tambahan aset --}}
         <tr>
             <td>Spesifikasi / Catatan</td>
             <td colspan="3">{{ $asset->catatan }}</td>
@@ -72,6 +89,7 @@
 
     <br>
 
+    {{-- Maklumat penempatan semasa aset --}}
     <table>
         <tr>
             <td colspan="4" class="section-title">PENEMPATAN</td>
@@ -89,19 +107,6 @@
     </table>
 
     <br>
-
-    {{-- Boleh tambah seksyen PEMERIKSAAN, PELUPUSAN ikut keperluan  --}}
-    <table>
-        <tr>
-            <td colspan="4" class="section-title">PEMERIKSAAN</td>
-        </tr>
-        <tr>
-            <td>Tarikh</td>
-            <td></td>
-            <td>Nama Pemeriksa</td>
-            <td></td>
-        </tr>
-    </table>
 
 </body>
 </html>

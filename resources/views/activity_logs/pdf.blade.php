@@ -3,6 +3,7 @@
 <head>
     <meta charset="utf-8">
     <style>
+        /* Tetapan asas PDF */
         body { font-family: DejaVu Sans; font-size: 10px; }
         table { width: 100%; border-collapse: collapse; }
         th, td { border: 1px solid #000; padding: 4px; }
@@ -11,8 +12,10 @@
 </head>
 <body>
 
+<!-- Tajuk laporan -->
 <h3>Log Aktiviti Sistem</h3>
 
+<!-- Jadual log aktiviti -->
 <table>
     <thead>
         <tr>
@@ -25,6 +28,7 @@
         </tr>
     </thead>
     <tbody>
+        <!-- Papar senarai log -->
         @foreach($logs as $log)
         <tr>
             <td>{{ $log->created_at->format('d/m/Y H:i') }}</td>

@@ -19,80 +19,74 @@ class AssetController extends Controller
     }
 
     /**
-     * LIST / INDEX
+     * Papar senarai aset dengan fungsi carian dan filter.
      */
     public function index(Request $request)
     {
+        // Query asas senarai aset
         $query = Asset::orderBy('created_at', 'desc');
 
+        // Kiraan usia aset
         $assets = $query->get()->map(function ($asset) {
-    $asset->usia_aset = $asset->tahun_perolehan
-        ? Carbon::now()->year - $asset->tahun_perolehan
-        : '-';
-    return $asset;
-});
-
-// SEARCH
-if ($request->filled('q')) {
-    $query->where(function ($q) use ($request) {
-        $q->where('no_siri', 'like', "%{$request->q}%")
-          ->orWhere('jenama', 'like', "%{$request->q}%")
-          ->orWhere('model', 'like', "%{$request->q}%")
-          ->orWhere('nama_pengguna', 'like', "%{$request->q}%");
+            $asset->usia_aset = $asset->tahun_perolehan
+                ? Carbon::now()->year - $asset->tahun_perolehan
+                : '-';
+            return $asset;
     });
-}
 
-/// ===============================
-// FILTER BAHAGIAN (UTAMA)
-// ===============================
-if ($request->filled('bahagian')) {
+        // Carian umum
+        if ($request->filled('q')) {
+            $query->where(function ($q) use ($request) {
+                $q->where('no_siri', 'like', "%{$request->q}%")
+                ->orWhere('jenama', 'like', "%{$request->q}%")
+                ->orWhere('model', 'like', "%{$request->q}%")
+                ->orWhere('nama_pengguna', 'like', "%{$request->q}%");
+            });
+        }
 
-    $bahagianModel = Bahagian::find($request->bahagian);
+        // Filter bahagian
+        if ($request->filled('bahagian')) {
 
-    if ($bahagianModel) {
-        $bahagianNama = preg_replace('/\s+/', ' ', trim($bahagianModel->nama));
+            $bahagianModel = Bahagian::find($request->bahagian);
 
-        $query->whereRaw(
-            "REPLACE(REPLACE(TRIM(bahagian), '\n', ' '), '  ', ' ') = ?",
-            [$bahagianNama]
-        );
-    }
-}
+            if ($bahagianModel) {
+                $bahagianNama = preg_replace('/\s+/', ' ', trim($bahagianModel->nama));
 
-// ===============================
-// FILTER UNIT (BERGANTUNG BAHAGIAN)
-// ===============================
-if ($request->filled('unit')) {
+                $query->whereRaw(
+                    "REPLACE(REPLACE(TRIM(bahagian), '\n', ' '), '  ', ' ') = ?",
+                    [$bahagianNama]
+                );
+            }
+        }
 
-    $unitModel = Unit::find($request->unit);
+        // Filter unit
+        if ($request->filled('unit')) {
 
-    if ($unitModel) {
-        $unitNama = preg_replace('/\s+/', ' ', trim($unitModel->nama));
+            $unitModel = Unit::find($request->unit);
 
-        $query->whereRaw(
-            "REPLACE(REPLACE(TRIM(unit), '\n', ' '), '  ', ' ') = ?",
-            [$unitNama]
-        );
-    }
-}
+            if ($unitModel) {
+                $unitNama = preg_replace('/\s+/', ' ', trim($unitModel->nama));
 
-
-
-// ===============================
-// FILTER KATEGORI
-// HANYA DIGUNA JIKA TIADA BAHAGIAN DIPILIH
-// ===============================
-if ($request->filled('kategori') && !$request->filled('bahagian')) {
-    $kategori = preg_replace('/\s+/', ' ', trim($request->kategori));
-
-    $query->whereRaw(
-        "REPLACE(REPLACE(TRIM(kategori), '\n', ' '), '  ', ' ') = ?",
-        [$kategori]
-    );
-}
+                $query->whereRaw(
+                    "REPLACE(REPLACE(TRIM(unit), '\n', ' '), '  ', ' ') = ?",
+                    [$unitNama]
+                );
+            }
+        }
 
 
-        // FILTER TARIKH
+
+        // Filter kategori 
+        if ($request->filled('kategori') && !$request->filled('bahagian')) {
+            $kategori = preg_replace('/\s+/', ' ', trim($request->kategori));
+
+            $query->whereRaw(
+                "REPLACE(REPLACE(TRIM(kategori), '\n', ' '), '  ', ' ') = ?",
+                [$kategori]
+            );
+        }
+
+        // Filter tarikh perolehan
         if ($request->filled('tarikh_dari')) {
             $query->whereDate('tarikh_perolehan', '>=', $request->tarikh_dari);
         }
@@ -101,7 +95,7 @@ if ($request->filled('kategori') && !$request->filled('bahagian')) {
             $query->whereDate('tarikh_perolehan', '<=', $request->tarikh_hingga);
         }
 
-        // FILTER USIA
+        // Filter berdasarkan usia aset
         $usia = (int) $request->get('usia');
         $tahunSemasa = now()->year;
 
@@ -124,6 +118,7 @@ if ($request->filled('kategori') && !$request->filled('bahagian')) {
             }
         }
 
+        // Data sokongan paparan
         $kategoriList = Asset::select('kategori')
             ->whereNotNull('kategori')
             ->distinct()
@@ -167,17 +162,18 @@ if ($request->filled('kategori') && !$request->filled('bahagian')) {
     }
 
     /**
-     * CREATE
+     * Papar borang tambah aset
      */
     public function create()
-{
-    $users = User::orderBy('name')->get();
-    return view('assets.create', compact('users'));
-}
+    {
+        $users = User::orderBy('name')->get();
+        return view('assets.create', compact('users'));
+    }
 
     /**
-     * STORE
+     * Simpan rekod aset baharu
      */
+
     public function store(Request $request)
     {
         $validated = $request->validate([
@@ -195,34 +191,35 @@ if ($request->filled('kategori') && !$request->filled('bahagian')) {
             'bahagian'           => 'nullable|string',
             'unit'               => 'nullable|string',
             'lokasi_lain'        => 'nullable|string',
-            'nama_pengguna'      => 'nullable|string',
             'tarikh_penempatan'  => 'nullable|date',
             'tarikh_pelupusan'   => 'nullable|date',
             'rujukan_pelupusan'  => 'nullable|string',
             'catatan'            => 'nullable|string',
-            'user_id' => 'required|exists:users,id',
+            'user_id'            => 'required|exists:users,id',
         ]);
 
+        // Tetapkan pengguna aset
         $user = User::findOrFail($request->user_id);
-
         $validated['user_id'] = $user->id;
         $validated['nama_pengguna'] = $user->name;
         $validated['status'] = 'Aktif';
+        $validated['tarikh_penempatan'] = $validated['tarikh_penempatan'] ?? now();
 
         $asset = Asset::create($validated);
 
-        //LOG AKTIVITI (SAH & BETUL)
+        // Rekod pergerakan dan log aktiviti
+        $this->logMovement($asset, $validated, []);
         logActivity('Tambah Aset', $asset->id);
 
         return redirect()->route('ict.assets.index')
             ->with('success', 'Aset berjaya ditambah!');
     }
-
     /**
-     * UPDATE
+     * Kemas kini maklumat aset.
      */
     public function update(Request $request, Asset $asset)
     {
+        // Validasi dan kemas kini aset
         $validated = $request->validate([
             'no_siri_aset'      => 'nullable|string',
             'kategori'          => 'nullable|string',
@@ -237,111 +234,106 @@ if ($request->filled('kategori') && !$request->filled('bahagian')) {
             'bahagian'          => 'nullable|string',
             'unit'              => 'nullable|string',
             'tarikh_penempatan' => 'nullable|date',
-            'nama_pengguna'     => 'nullable|string',
             'tarikh_pelupusan'  => 'nullable|date',
             'rujukan_pelupusan' => 'nullable|string',
             'catatan'           => 'nullable|string',
-            'user_id' => 'nullable|exists:users,id',
+            'user_id'           => 'nullable|exists:users,id',
         ]);
 
         $original = $asset->getOriginal();
 
-        $user = User::findOrFail($request->user_id);
-
-        $validated['user_id'] = $user->id;
-        $validated['nama_pengguna'] = $user->name;
+        if (!empty($validated['user_id']) && $validated['user_id'] != $asset->user_id) {
+            $user = User::findOrFail($validated['user_id']);
+            $validated['user_id'] = $user->id;
+            $validated['nama_pengguna'] = $user->name;
+            $validated['status'] = 'Aktif';
+        } else {
+            unset($validated['user_id'], $validated['nama_pengguna']);
+        }
 
         $asset->update($validated);
 
-        // LOG AKTIVITI (SAH & BETUL)
         logActivity('Kemaskini Aset', $asset->id);
-
         $this->logMovement($asset, $validated, $original);
 
         return redirect()->route('ict.assets.index')
             ->with('success', 'Aset berjaya dikemaskini!');
     }
+        /**
+         * LOG PERGERAKAN ASET
+         */
+        private function logMovement(Asset $asset, array $validated, array $original)
+        {
+            if (($original['status'] ?? null) !== ($asset->status ?? null)
+                && $asset->status === 'Rosak') {
+
+                $asset->movements()->create([
+                    'bahagian'      => $asset->bahagian,
+                    'unit'          => $asset->unit,
+                    'nama_pengguna' => $asset->nama_pengguna,
+                    'tarikh_mula'   => $validated['tarikh_penempatan']
+                                    ?? $asset->tarikh_penempatan
+                                    ?? now(),
+                    'catatan'       => 'Aset ditanda sebagai ROSAK',
+                ]);
+                return;
+            }
+
+            $fields = ['bahagian', 'unit', 'nama_pengguna'];
+            $changed = false;
+
+            foreach ($fields as $field) {
+                if (($original[$field] ?? null) !== ($validated[$field] ?? null)) {
+                    $changed = true;
+                    break;
+                }
+            }
+
+            if ($changed) {
+                $last = $asset->movements()->whereNull('tarikh_tamat')->first();
+                if ($last) {
+                    $last->update(['tarikh_tamat' => now()]);
+                }
+
+                $asset->movements()->create([
+                    'bahagian'      => $validated['bahagian'] ?? null,
+                    'unit'          => $validated['unit'] ?? null,
+                    'nama_pengguna' => $validated['nama_pengguna'] ?? null,
+                    'tarikh_mula'   => $validated['tarikh_penempatan']
+                                    ?? $asset->tarikh_penempatan
+                                    ?? now(),
+                    'catatan'       => 'Perubahan penempatan aset',
+                ]);
+            }
+        }
+
+        /**
+         * Papar borang kemas kini aset
+         */
+                public function edit(Asset $asset)
+            {
+                $users = User::orderBy('name')->get();
+                return view('assets.edit', compact('asset', 'users'));
+            }
 
     /**
-     * LOG PERGERAKAN ASET
+     * Papar maklumat aset & sejarah penempatan
      */
-    private function logMovement(Asset $asset, array $validated, array $original)
+    public function show(Asset $asset)
     {
-        if (($original['status'] ?? null) !== ($asset->status ?? null)
-            && $asset->status === 'Rosak') {
-
-            $asset->movements()->create([
-                'bahagian'      => $asset->bahagian,
-                'unit'          => $asset->unit,
-                'nama_pengguna' => $asset->nama_pengguna,
-                'tarikh_mula'   => $validated['tarikh_penempatan']
-                                ?? $asset->tarikh_penempatan
-                                ?? now(),
-                'catatan'       => 'Aset ditanda sebagai ROSAK',
-            ]);
-            return;
-        }
-
-        $fields = ['bahagian', 'unit', 'nama_pengguna'];
-        $changed = false;
-
-        foreach ($fields as $field) {
-            if (($original[$field] ?? null) !== ($validated[$field] ?? null)) {
-                $changed = true;
-                break;
-            }
-        }
-
-        if ($changed) {
-            $last = $asset->movements()->whereNull('tarikh_tamat')->first();
-            if ($last) {
-                $last->update(['tarikh_tamat' => now()]);
-            }
-
-            $asset->movements()->create([
-                'bahagian'      => $validated['bahagian'] ?? null,
-                'unit'          => $validated['unit'] ?? null,
-                'nama_pengguna' => $validated['nama_pengguna'] ?? null,
-                'tarikh_mula'   => $validated['tarikh_penempatan']
-                                ?? $asset->tarikh_penempatan
-                                ?? now(),
-                'catatan'       => 'Perubahan penempatan aset',
-            ]);
-        }
+        $asset->load('movements');
+        return view('assets.show', compact('asset'));
     }
 
-    /**
-     * EDIT
-     */
-            public function edit(Asset $asset)
-        {
-            $users = User::orderBy('name')->get();
-            return view('assets.edit', compact('asset', 'users'));
-        }
-
 
     /**
- * SHOW - Papar maklumat aset & sejarah penempatan
- */
-public function show(Asset $asset)
-{
-    // eager load movements (sejarah penempatan)
-    $asset->load('movements');
-
-    return view('assets.show', compact('asset'));
-}
-
-
-    /**
-     * DESTROY
+     * PADAM RECORD ASET
      */
     public function destroy(Asset $asset)
     {
         $asset->delete();
 
-        return redirect()->route('ict.assets.index')
-            ->with('success', 'Aset berjaya dipadam.');
-    }
-
-    
+            return redirect()->route('ict.assets.index')
+                ->with('success', 'Aset berjaya dipadam.');
+    }     
 }

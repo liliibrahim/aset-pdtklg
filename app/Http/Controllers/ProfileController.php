@@ -11,9 +11,7 @@ use Illuminate\View\View;
 
 class ProfileController extends Controller
 {
-    /**
-     * Display the user's profile form.
-     */
+    // Papar borang profil pengguna
     public function edit(Request $request): View
     {
         return view('profile.edit', [
@@ -21,13 +19,12 @@ class ProfileController extends Controller
         ]);
     }
 
-    /**
-     * Update the user's profile information.
-     */
+    // Kemas kini maklumat profil pengguna
     public function update(ProfileUpdateRequest $request): RedirectResponse
     {
         $request->user()->fill($request->validated());
 
+        // Reset pengesahan email jika email diubah
         if ($request->user()->isDirty('email')) {
             $request->user()->email_verified_at = null;
         }
@@ -37,9 +34,7 @@ class ProfileController extends Controller
         return Redirect::route('profile.edit')->with('status', 'profile-updated');
     }
 
-    /**
-     * Delete the user's account.
-     */
+    // Delete akaun pengguna
     public function destroy(Request $request): RedirectResponse
     {
         $request->validateWithBag('userDeletion', [

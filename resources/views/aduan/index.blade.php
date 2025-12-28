@@ -1,15 +1,17 @@
 <x-app-layout>
 <div class="px-6 py-6">
 
+    {{-- Tajuk halaman --}}
     <h1 class="text-2xl font-bold mb-4">Senarai Aduan</h1>
 
     @php
+        // Status semasa dari URL
         $currentStatus = request('status');
     @endphp
 
-    {{-- TAB STATUS --}}
+    {{-- Tab filter status aduan --}}
     <div class="flex gap-3 mb-6">
-        {{-- BARU --}}
+        {{-- Aduan baru --}}
         <a href="{{ route('ict.aduan.index', ['status' => 'baru']) }}"
            class="px-4 py-2 rounded-lg border
            {{ $currentStatus === 'baru'
@@ -18,7 +20,7 @@
             Baru
         </a>
 
-        {{-- DALAM TINDAKAN --}}
+        {{-- Aduan dalam tindakan --}}
         <a href="{{ route('ict.aduan.index', ['status' => 'dalam_tindakan']) }}"
            class="px-4 py-2 rounded-lg border
            {{ $currentStatus === 'dalam_tindakan'
@@ -27,7 +29,7 @@
             Dalam Tindakan
         </a>
 
-        {{-- SELESAI --}}
+        {{-- Aduan selesai --}}
         <a href="{{ route('ict.aduan.index', ['status' => 'selesai']) }}"
            class="px-4 py-2 rounded-lg border
            {{ $currentStatus === 'selesai'
@@ -37,7 +39,7 @@
         </a>
     </div>
 
-    {{-- TABLE --}}
+    {{-- Jadual senarai aduan --}}
     <div class="overflow-x-auto bg-white rounded-lg border">
         <table class="w-full border-collapse">
             <thead class="bg-gray-100">
@@ -46,6 +48,8 @@
                     <th class="px-3 py-2 text-left">Tarikh Aduan</th>
                     <th class="px-3 py-2 text-left">Pengadu</th>
                     <th class="px-3 py-2 text-left">Maklumat Aset</th>
+                    <th class="px-3 py-2 text-left">Jenis Aduan</th>
+                    <th class="px-3 py-2 text-left">Keterangan Aduan</th>
                     <th class="px-3 py-2 text-left">Status</th>
                     <th class="px-3 py-2 text-left">Tindakan ICT</th>
                 </tr>
@@ -55,31 +59,24 @@
             @forelse($aduans as $aduan)
 
                 @php
-                    /*
-                    |--------------------------------------------------------------------------
-                    | NORMALISASI STATUS (PENTING)
-                    |--------------------------------------------------------------------------
-                    */
+                    // Normalisasi status aduan
                     $statusUi = match (strtolower(trim($aduan->status))) {
                         'baru',
                         'menunggu tindakan ict' => 'baru',
-
                         'dalam tindakan',
                         'dalam_tindakan' => 'dalam_tindakan',
-
                         'selesai' => 'selesai',
-
                         default => 'baru',
                     };
                 @endphp
 
                 <tr class="border-t">
-                    {{-- Bil --}}
+                    {{-- Nombor bil --}}
                     <td class="px-3 py-2 align-top">
                         {{ $loop->iteration + ($aduans->currentPage() - 1) * $aduans->perPage() }}
                     </td>
 
-                    {{-- Tarikh --}}
+                    {{-- Tarikh aduan --}}
                     <td class="px-3 py-2 align-top">
                         {{ $aduan->created_at->format('d/m/Y') }}
                     </td>
@@ -100,6 +97,18 @@
                         </div>
                     </td>
 
+                    {{-- Jenis Aduan --}}
+                    <td class="px-3 py-2 align-top">
+                        {{ $aduan->jenis_aduan ?? '-' }}
+                    </td>
+
+                    {{-- Keterangan Aduan --}}
+                    <td class="px-3 py-2 align-top max-w-xs">
+                        <div class="text-sm text-gray-700 whitespace-pre-line">
+                            {{ $aduan->keterangan ?? '-' }}
+                        </div>
+                    </td>
+                    
                     {{-- Status --}}
                     <td class="px-3 py-2 align-top">
                         @if($statusUi === 'baru')
@@ -154,6 +163,7 @@
                 </tr>
 
             @empty
+                {{-- Tiada aduan --}}
                 <tr>
                     <td colspan="6" class="px-4 py-6 text-center text-gray-500">
                         Tiada rekod aduan.
@@ -164,7 +174,7 @@
         </table>
     </div>
 
-    {{-- PAGINATION --}}
+    {{-- Pagination --}}
     <div class="mt-4">
         {{ $aduans->links() }}
     </div>

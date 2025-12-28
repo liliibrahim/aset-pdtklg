@@ -9,9 +9,7 @@ use Illuminate\Support\Facades\Auth;
 
 class UserController extends Controller
 {
-    /**
-     * AJAX: unit ikut bahagian (fungsi lama – kekal)
-     */
+    // AJAX: Dapatkan senarai unit berdasarkan bahagian
     public function getUnitsByBahagian($bahagianId)
     {
         return response()->json(
@@ -21,15 +19,12 @@ class UserController extends Controller
         );
     }
 
-    /**
-     * Senarai pengguna
-     * ✔ Admin: papar SEMUA pengguna
-     */
+    // Senarai pengguna (Admin: semua pengguna)
     public function index(Request $request)
 {
     $query = User::with(['bahagian', 'unit']);
 
-    // 🔍 SEARCH
+    // Carian pengguna
     if ($request->filled('search')) {
         $search = $request->search;
 
@@ -44,11 +39,7 @@ class UserController extends Controller
 
     return view('admin.users.index', compact('users'));
 }
-
-
-    /**
-     * Papar borang create (placeholder – kekal)
-     */
+    // Papar borang create (placeholder)
     public function create()
     {
         return view('users.create');
@@ -64,13 +55,10 @@ class UserController extends Controller
         return view('users.show', compact('user'));
     }
 
-    /**
-     * EDIT PENGGUNA
-     * ✔ Admin boleh edit role
-     * ✔ Fungsi lama kekal
-     */
+    // Papar borang edit pengguna
     public function edit(User $user)
     {
+        // Admin guna view khas
         if (Auth::user()->role === 'admin' && view()->exists('admin.users.edit')) {
             return view('admin.users.edit', compact('user'));
         }
@@ -78,14 +66,12 @@ class UserController extends Controller
         return view('users.edit', compact('user'));
     }
 
-    /**
-     * UPDATE PENGGUNA
-     * ✔ Admin boleh tukar role
-     */
+    // Kemas kini pengguna (Admin boleh tukar role)
     public function update(Request $request, User $user)
     {
         if (Auth::user()->role === 'admin' && $request->has('role')) {
 
+            // Validasi role
             $request->validate([
                 'role' => 'in:admin,ict,user',
             ]);
@@ -109,6 +95,7 @@ class UserController extends Controller
             ->with('success', 'User deleted (placeholder)');
     }
 
+    // Reset kata laluan pengguna (Admin)    
     public function resetPassword(User $user)
     {
         $user->password = bcrypt('password123');
@@ -119,9 +106,7 @@ class UserController extends Controller
         return back()->with('success', 'Kata laluan telah direset');
     }
 
-    /**
-     * Senarai Pentadbir Sistem
-     */
+    // Senarai Pentadbir Sistem
     public function admins()
     {
         $users = User::where('role', 'admin')
@@ -132,9 +117,7 @@ class UserController extends Controller
         return view('admin.users.index', compact('users'));
     }
 
-    /**
-     * Senarai Pegawai ICT
-     */
+    // Senarai Pegawai ICT
     public function ict()
     {
         $users = User::where('role', 'ict')

@@ -38,13 +38,13 @@ class AuthenticatedSessionController extends Controller
             'password' => 'required',
         ]);
 
-        // Authenticate (Breeze)
+        // Authenticate guna Breeze
         $request->authenticate();
 
-        // Regenerate session
+        // Regenerate session utk keselamatan
         $request->session()->regenerate();
 
-        // =============== REDIRECT IKUT ROLE ===============
+         // Redirect pengguna ikut role
         $user = $request->user();
 
         if ($user->role === 'admin_system') {
@@ -55,7 +55,7 @@ class AuthenticatedSessionController extends Controller
             return redirect()->route('ict.dashboard');
         }
 
-        // fallback user lain (jika ada)
+        // fallback untuk user lain
         return redirect()->route('dashboard');
     }
 

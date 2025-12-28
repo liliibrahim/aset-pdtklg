@@ -1,13 +1,16 @@
 <x-app-layout>
 <div class="px-6 py-6">
 
+    {{-- Tajuk laporan --}}
     <h1 class="text-xl font-bold mb-4">Laporan Aset Usang</h1>
 
-    {{-- FILTER + CETAK PDF --}}
+    {{-- Filter + cetak pdf --}}
     <div class="flex justify-between items-center mb-4">
 
-        {{-- FILTER (KIRI) --}}
+        {{-- Filter tahap usia aset --}}
         <form method="GET" class="flex items-center gap-2">
+
+            {{-- Pilihan tahap usia aset --}}
             <select name="tahap" class="border rounded px-3 py-2 text-sm">
                 <option value="">Semua</option>
                 <option value="5" @selected(request('tahap') == 5)>5–6 Tahun</option>
@@ -15,6 +18,7 @@
                 <option value="8" @selected(request('tahap') >= 8)>≥ 8 Tahun</option>
             </select>
 
+            {{-- Hantar filter --}}
             <button
                 type="submit"
                 class="px-4 py-2 bg-blue-600 text-white rounded text-sm">
@@ -22,7 +26,7 @@
             </button>
         </form>
 
-        {{-- CETAK PDF (KANAN) --}}
+        {{-- Cetak pdf ikut filter semasa --}}
         <a href="{{ route('ict.laporan.aset_usang.pdf', request()->query()) }}"
            target="_blank"
            class="px-4 py-2 bg-red-600 text-white rounded text-sm inline-flex items-center gap-2">
@@ -31,7 +35,7 @@
 
     </div>
 
-    {{-- JADUAL --}}
+    {{-- Jadual senarai aset usang --}}
     <table class="w-full border">
         <thead class="bg-gray-100">
             <tr>
@@ -44,7 +48,10 @@
                 <th class="border px-2 py-1">Unit</th>
             </tr>
         </thead>
+
         <tbody>
+
+            {{-- Papar rekod aset --}}
             @forelse($assets as $i => $a)
                 <tr>
                     <td class="border px-2 py-1">{{ $i + 1 }}</td>
@@ -55,6 +62,8 @@
                     <td class="border px-2 py-1">{{ $a->bahagian ?? '-' }}</td>
                     <td class="border px-2 py-1">{{ $a->unit ?? '-' }}</td>
                 </tr>
+
+            {{-- Jika tiada rekod --}}
             @empty
                 <tr>
                     <td colspan="7" class="border px-2 py-3 text-center">

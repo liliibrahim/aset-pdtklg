@@ -13,6 +13,9 @@ class AssetReportController extends Controller
         $this->middleware('auth');
     }
 
+    /**
+     * Jana Laporan A (maklumat terperinci aset) dalam format PDF.
+     */
      public function laporanA($id)
     {
         $asset = Asset::findOrFail($id);
@@ -23,6 +26,9 @@ class AssetReportController extends Controller
         return $pdf->stream("Laporan_A_{$asset->id}.pdf");
     }
 
+    /**
+     * Jana Laporan B (laporan teknikal aset) dalam format PDF.
+     */
      public function laporanB($id)
     {
         $asset = Asset::findOrFail($id);
@@ -35,7 +41,10 @@ class AssetReportController extends Controller
         return $pdf->stream("Laporan_B_{$asset->id}.pdf");
     }
 
-     public function laporanSenarai(Request $request)
+    /**
+     * Jana laporan senarai aset berdasarkan carian dan filter.
+     */ 
+    public function laporanSenarai(Request $request)
     {
         $query = Asset::query();
 
@@ -61,6 +70,10 @@ class AssetReportController extends Controller
 
         return $pdf->stream('Laporan_Senarai_Aset.pdf');
     }
+    
+    /**
+     * Menjana laporan aset usang dalam format PDF.
+     */
     public function asetUsingPdf(Request $request)
 {
     $assets = $this->asetUsing($request)->getData()['assets'];

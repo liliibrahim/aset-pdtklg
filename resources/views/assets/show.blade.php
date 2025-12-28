@@ -13,24 +13,22 @@
             </a>
         </div>
 
-
+        {{-- Jana laporan aset (PDF) --}}
         <div class="flex justify-end gap-2 mb-4">
-    <a href="{{ route('ict.assets.laporanA', $asset->id) }}"
-        target="_blank"
-       class="px-3 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 text-sm">
-        Laporan A (Maklumat Aset)
-    </a>
+            <a href="{{ route('ict.assets.laporanA', $asset->id) }}"
+                target="_blank"
+            class="px-3 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 text-sm">
+                Laporan A (Maklumat Aset)
+            </a>
 
-    <a href="{{ route('ict.assets.laporanB', $asset->id) }}"
-        target="_blank"
-       class="px-3 py-2 bg-green-600 text-white rounded hover:bg-green-700 text-sm">
-        Laporan B (Naik Taraf / Komponen)
-    </a>
-</div>
+            <a href="{{ route('ict.assets.laporanB', $asset->id) }}"
+                target="_blank"
+            class="px-3 py-2 bg-green-600 text-white rounded hover:bg-green-700 text-sm">
+                Laporan B (Naik Taraf / Komponen)
+            </a>
+        </div>
 
-        {{-- ===================================================== --}}
-        {{--               MAKLUMAT ASET ICT                     --}}
-        {{-- ===================================================== --}}
+       {{-- Paparan maklumat asas aset --}}
         <div class="bg-white p-6 rounded-xl shadow mb-8">
             <h2 class="font-bold text-lg mb-4">Maklumat Aset</h2>
 
@@ -80,12 +78,11 @@
             </div>
         </div>
 
-        {{-- ===================================================== --}}
-        {{--               SEJARAH PENEMPATAN                    --}}
-        {{-- ===================================================== --}}
+        {{-- Papar sejarah penempatan aset --}}
         <div class="bg-white p-6 rounded-xl shadow">
             <h2 class="font-bold text-lg mb-4">Sejarah Penempatan</h2>
 
+            {{-- Semak jika aset mempunyai rekod penempatan --}}
             @if ($asset->movements->isEmpty())
                 <p class="text-sm text-gray-600">Tiada rekod sejarah penempatan.</p>
             @else
@@ -98,7 +95,7 @@
                                 <th class="px-3 py-2 border-b text-left">Unit</th>
                                 <th class="px-3 py-2 border-b text-left">Pengguna</th>
                                 <th class="px-3 py-2 border-b text-left">Tarikh Mula</th>
-                                                                <th class="px-3 py-2 border-b text-left">Catatan</th>
+                                <th class="px-3 py-2 border-b text-left">Catatan</th>
                             </tr>
                         </thead>
 
@@ -124,7 +121,7 @@
                                         {{ $m->nama_pengguna ?? '-' }}
                                     </td>
 
-                                    {{-- TARIKH MULA --}}
+                                    {{-- Elak paparan tarikh tidak sah --}}
                                     <td class="px-3 py-2 border-b">
                                         @if(!empty($m->tarikh_mula) && $m->tarikh_mula != '0000-00-00')
                                             {{ \Carbon\Carbon::parse($m->tarikh_mula)->format('d.m.Y') }}

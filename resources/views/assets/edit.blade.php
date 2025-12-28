@@ -12,7 +12,7 @@
             </a>
         </div>
 
-        {{-- PAPAR ERROR --}}
+        {{-- Papar ralat validasi --}}
         @if ($errors->any())
             <div class="bg-red-100 text-red-700 px-4 py-3 rounded mb-4">
                 <ul class="list-disc ms-6 text-sm">
@@ -23,19 +23,18 @@
             </div>
         @endif
 
+        {{-- Borang kemaskini aset --}}
         <form id="formEditAset" action="{{ route('ict.assets.update', $asset->id) }}" method="POST">
             @csrf
             @method('PUT')
 
-            {{-- ================================================================= --}}
-            {{--                        MAKLUMAT ASET ICT                        --}}
-            {{-- ================================================================= --}}
+            {{-- Maklumat aset --}}
             <div class="bg-white p-6 rounded-xl shadow mb-8">
                 <h2 class="font-bold text-lg mb-4">Maklumat Aset ICT</h2>
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
 
-                    {{-- No Siri Aset --}}
+                    {{-- MNo Siri Aset --}}
                     <div class="md:col-span-2">
                         <label class="font-semibold text-sm">No Siri Aset (Tidak Wajib)</label>
                         <input type="text" name="no_siri_aset"
@@ -117,15 +116,13 @@
                 </div>
             </div>
 
-            {{-- ================================================================= --}}
-            {{--                        MAKLUMAT PEROLEHAN                        --}}
-            {{-- ================================================================= --}}
+            {{-- Maklumat perolehan --}}
             <div class="bg-white p-6 rounded-xl shadow mb-8">
                 <h2 class="font-bold text-lg mb-4">Maklumat Perolehan</h2>
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
 
-                    {{-- TARIKH PEROLEHAN --}}
+                    {{-- Tarikh Perolehan --}}
                     <div>
                     <label class="font-semibold text-sm">Tarikh Perolehan</label>
                     <input type="date"
@@ -196,9 +193,7 @@
                 </div>
             </div>
 
-            {{-- ================================================================= --}}
-            {{--                       MAKLUMAT PENEMPATAN                       --}}
-            {{-- ================================================================= --}}
+            {{-- Maklumat penempatan --}}
             <div class="bg-white p-6 rounded-xl shadow mb-8">
                 <h2 class="font-bold text-lg mb-4">Maklumat Penempatan</h2>
 
@@ -241,22 +236,21 @@
 
                     {{-- Nama Pengguna --}}
                     <div>
-    <label class="font-semibold text-sm">Nama Pengguna</label>
+                        <label class="font-semibold text-sm">Nama Pengguna</label>
 
-    <select name="user_id"
-            class="mt-1 w-full border rounded px-3 py-2 form-control"
-            required>
-        <option value="">-- Pilih Pengguna --</option>
+                        <select name="user_id"
+                                class="mt-1 w-full border rounded px-3 py-2 form-control"
+                                required>
+                            <option value="">-- Pilih Pengguna --</option>
 
-        @foreach ($users as $user)
-            <option value="{{ $user->id }}"
-                {{ old('user_id', $asset->user_id ?? '') == $user->id ? 'selected' : '' }}>
-                {{ $user->name }}
-            </option>
-        @endforeach
-    </select>
-</div>
-
+                            @foreach ($users as $user)
+                                <option value="{{ $user->id }}"
+                                    {{ old('user_id', $asset->user_id ?? '') == $user->id ? 'selected' : '' }}>
+                                    {{ $user->name }}
+                                </option>
+                            @endforeach
+                        </select>
+                    </div>
 
                    {{-- Tarikh Penempatan --}}
                     <div>
@@ -269,9 +263,7 @@
 
             </div>
 
-            {{-- ================================================================= --}}
-            {{--                            CATATAN                               --}}
-            {{-- ================================================================= --}}
+            {{-- Catatan --}}
             <div class="bg-white p-6 rounded-xl shadow mb-8">
                 <h2 class="font-bold text-lg mb-4">Catatan</h2>
 
@@ -279,7 +271,7 @@
                     class="w-full border rounded px-3 py-2">{{ old('catatan', $asset->catatan) }}</textarea>
             </div>
 
-            {{-- BUTTON --}}
+            {{-- Simpan perubahan --}}
             <div class="flex justify-end gap-4 mt-6">
 
                  <button type="submit"
@@ -292,11 +284,9 @@
         </form>
     </div>
 
-{{-- SCRIPT: AUTO KIRA USIA + AUTO UNIT --}}
+{{-- Skrip automasi --}}
 <script>
-    // =====================================================
-    // KIRA USIA BARU (AUTO) - TARIKH PEROLEHAN TIDAK BOLEH UBAH
-    // =====================================================
+    // Kira usia aset automatik
     const tarikhInput = document.getElementById('tarikh_perolehan');
     const usiaField   = document.getElementById('usia_aset');
 
@@ -325,10 +315,7 @@
         });
     }
 
-    // =====================================================
-    // UNIT DROPDOWN BERGANTUNG KEPADA BAHAGIAN
-    // (Boleh tukar penempatan semasa EDIT)
-    // =====================================================
+    // Papar unit ikut bahagian
     const unitList = {
         "Bahagian Khidmat Pengurusan": [
             "Unit Pentadbiran Am",
@@ -381,6 +368,5 @@
     }
     document.addEventListener('DOMContentLoaded', populateUnit);
 </script>
-
 
 </x-app-layout>

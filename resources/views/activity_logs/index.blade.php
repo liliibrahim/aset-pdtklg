@@ -1,19 +1,20 @@
 <x-app-layout>
 <div class="px-6 py-6">
 
-    {{-- TAJUK KIRI + BUTANG PDF KANAN --}}
+    {{-- Papar tajuk dan butang cetak PDF --}}
     <div class="flex items-center justify-between mb-4">
-    <h1 class="text-xl font-bold">
-        Log Aktiviti Sistem
-    </h1>
+        <h1 class="text-xl font-bold">
+            Log Aktiviti Sistem
+        </h1>
 
-    <a href="{{ route('admin.activity-logs.pdf') }}"
-       target="_blank"
-       class="px-4 py-2 bg-red-600 text-white text-sm rounded hover:bg-red-700">
-        📄 Cetak Laporan PDF
-    </a>
-</div>
+        {{-- Cetak laporan log aktiviti --}}
+        <a href="{{ route('admin.activity-logs.pdf') }}"
+        target="_blank"
+        class="px-4 py-2 bg-red-600 text-white text-sm rounded hover:bg-red-700"> 📄 Cetak Laporan PDF
+        </a>
+    </div>
 
+    {{-- Jadual log aktiviti --}}
     <table class="min-w-full bg-white border rounded-lg overflow-hidden">
         <thead class="bg-gray-50 text-gray-600 uppercase text-xs">
             <tr>
@@ -63,6 +64,7 @@
         </tbody>
     </table>
 
+    {{-- Pagination --}}
     <div class="mt-4">
         {{ $logs->links() }}
     </div>

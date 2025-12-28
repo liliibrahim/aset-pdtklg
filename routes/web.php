@@ -23,6 +23,7 @@ Route::get('/', function () {
     return view('welcome');
 })->name('welcome');
 
+/* AJAX: dapatkan unit berdasarkan bahagian */
 Route::get('/get-units/{bahagian}', [UserController::class, 'getUnitsByBahagian'])
     ->name('get-units');
 
@@ -64,16 +65,18 @@ Route::middleware(['auth'])->group(function () {
         ->name('admin.')
         ->group(function () {
 
+            /* Dashboard admin */
             Route::get('/dashboard', [AdminDashboardController::class, 'index'])
                 ->name('dashboard');
 
+            /* Log aktiviti sistem */
             Route::get('/activity-logs', [ActivityLogController::class, 'index'])
                 ->name('activity-logs.index');
 
             Route::get('/activity-logs/pdf', [ActivityLogController::class, 'pdf'])
                 ->name('activity-logs.pdf');
 
-            // Pengguna
+             /* Pengurusan pengguna */
             Route::get('/users', [UserController::class, 'index'])->name('users.index');
             Route::get('/users/admins', [UserController::class, 'admins'])->name('users.admins');
             Route::get('/users/ict', [UserController::class, 'ict'])->name('users.ict');
@@ -101,52 +104,35 @@ Route::middleware(['auth'])->group(function () {
         ->name('ict.')
         ->group(function () {
 
-            /*
-            | DASHBOARD ICT
-            */
+            /* Dashboard ICT */
             Route::get('/dashboard', [DashboardController::class, 'ict'])
                 ->name('dashboard');
 
             Route::get('/dashboard/filter', [DashboardController::class, 'filter'])
                 ->name('dashboard.filter');
 
-            /*
-            | ASSET MANAGEMENT LAPORAN A DAN B KEWPA
-            */
+            /* Pengurusan aset (KEW.PA)*/
             Route::resource('assets', AssetController::class)
                 ->only(['index', 'create', 'store', 'edit', 'update', 'show']);
 
             Route::delete('/assets/{asset}', [AssetController::class, 'destroy'])
                 ->name('assets.destroy');
 
+            /* Laporan aset KEW.PA */
             Route::get('/assets/{id}/laporan-a', [AssetReportController::class, 'laporanA'])
                 ->name('assets.laporanA');
 
             Route::get('/assets/{id}/laporan-b', [AssetReportController::class, 'laporanB'])
                 ->name('assets.laporanB');
 
-            /*
-            |--------------------------------------------------------------------------
-            | ICT ADUAN (OPERASI HARIAN)
-            | URL: /ict/aduan
-            |--------------------------------------------------------------------------
-            */
+            /*ICT ADUAN (OPERASI HARIAN)*/
             Route::get('/aduan', [ICTAduanController::class, 'index'])
                 ->name('aduan.index');
 
             Route::put('/aduan/{aduan}', [ICTAduanController::class, 'update'])
                 ->name('aduan.update');
 
-            /*
-            |--------------------------------------------------------------------------
-            | ICT LAPORAN (ADUAN, ASET ROSAK, ASET USANG)
-            |--------------------------------------------------------------------------
-            | URL:
-            | /ict/laporan/aduan
-            | /ict/laporan/aset-rosak
-            | /ict/laporan/aset-usang
-            |--------------------------------------------------------------------------
-            */
+            /*ICT LAPORAN (ADUAN, ASET ROSAK, ASET USANG) */
             Route::prefix('laporan')
                 ->name('laporan.')
                 ->group(function () {
@@ -173,9 +159,7 @@ Route::middleware(['auth'])->group(function () {
                     ->name('aset_usang.pdf');
                                 });
 
-            /*
-            | AJAX
-            */
+            /* AJAX: unit ikut bahagian */
             Route::get('/get-units-by-bahagian',
                 [DashboardController::class, 'getUnitsByBahagian']
             )->name('getUnitsByBahagian');
@@ -191,9 +175,11 @@ Route::middleware(['auth'])->group(function () {
         ->name('user.')
         ->group(function () {
 
+             /* Dashboard pengguna */
             Route::get('/dashboard', [DashboardController::class, 'user'])
                 ->name('dashboard');
 
+            /* Aduan aset */
             Route::get('/aduan/{asset}', [ComplaintController::class, 'create'])
                 ->name('aduan.create');
 
@@ -201,11 +187,7 @@ Route::middleware(['auth'])->group(function () {
                 ->name('aduan.store');
         });
 
-    /*
-    |--------------------------------------------------------------------------
-    | API
-    |--------------------------------------------------------------------------
-    */
+    /* API - untuk integrasi data unit*/
     Route::get('/api/units/{bahagian}', function ($bahagianId) {
         return \App\Models\Unit::where('bahagian_id', $bahagianId)
             ->orderBy('nama')

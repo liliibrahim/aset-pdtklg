@@ -13,7 +13,7 @@ class ActivityLogController extends Controller
     }
 
     
-    //Paparan Senarai Semua Log Aktiviti (HTML)
+    //Paparan Senarai Semua Log Aktiviti 
     
     public function index()
     {

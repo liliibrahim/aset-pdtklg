@@ -11,8 +11,7 @@ use Illuminate\Support\Facades\DB;
 
 class IctReportController extends Controller
 {
-    // LAPORAN ADUAN ICT (SCREEN)
-     
+    // Paparan laporan aduan ICT (screen)     
     public function aduan(Request $request)
     {
         $status = $request->input('status');
@@ -21,14 +20,17 @@ class IctReportController extends Controller
 
         $query = MaintenanceRequest::with('asset');
 
+        // Filter asas
         $query->when($status, fn ($q) => $q->where('status', $status));
         $query->when($from, fn ($q) => $q->whereDate('created_at', '>=', $from));
         $query->when($to, fn ($q) => $q->whereDate('created_at', '<=', $to));
 
+        // Senarai aduan dengan pagination
         $aduans = $query->latest()
             ->paginate(15)
             ->withQueryString();
 
+        // Ringkasan statistik aduan
         $ringkasan = MaintenanceRequest::selectRaw("
                 SUM(status = 'baru') AS baru,
                 SUM(status = 'dalam_tindakan') AS dalam_tindakan,
@@ -47,8 +49,7 @@ class IctReportController extends Controller
         ));
     }
 
-    // LAPORAN ASET ROSAK (SCREEN)
-     
+    // Paparan laporan aset rosak (screen)     
     public function asetRosak(Request $request)
     {
         $bahagian = $request->input('bahagian');
@@ -56,6 +57,7 @@ class IctReportController extends Controller
 
         $query = Asset::where('status', 'rosak');
 
+        // Filter mengikut bahagian dan unit
         $query->when($bahagian, fn ($q) => $q->where('bahagian', $bahagian));
         $query->when($unit, fn ($q) => $q->where('unit', $unit));
 
@@ -73,6 +75,7 @@ class IctReportController extends Controller
 
         $jumlahRosak = Asset::where('status', 'rosak')->count();
 
+        // Senarai aset rosak dengan pagination
         $assets = $query->orderBy('bahagian')
             ->orderBy('unit')
             ->paginate(15)
@@ -88,26 +91,23 @@ class IctReportController extends Controller
         ));
     }
 
-    // LAPORAN ASET MENGIKUT USIA (SCREEN)
-    
+    // Paparan laporan aset mengikut usia (screen)    
     public function asetUsang(Request $request)
     {
         $tahap = (int) $request->get('usia'); // 5,7,8
         $tahunSemasa = now()->year;
-
+        
+        // Filter aset berdasarkan kategori usia
         $assets = Asset::when($tahap, function ($q) use ($tahap, $tahunSemasa) {
 
             if ($tahap == 5) {
-                // Akan Usang: 6–7 tahun
                 $q->whereBetween(
                     DB::raw('YEAR(tarikh_perolehan)'),
                     [$tahunSemasa - 7, $tahunSemasa - 6]
                 );
             } elseif ($tahap == 7) {
-                // Wajar Dinilai Pelupusan: 8 tahun
                 $q->whereYear('tarikh_perolehan', $tahunSemasa - 8);
             } elseif ($tahap == 8) {
-                // Disyorkan Ganti Tahun Ini: ≥ 9 tahun
                 $q->whereYear('tarikh_perolehan', '<=', $tahunSemasa - 9);
             }
         })->paginate(20);
@@ -115,42 +115,51 @@ class IctReportController extends Controller
         return view('LaporanMain.aset_usang', compact('assets', 'tahap'));
     }
 
-    // PDF LAPORAN ADUAN ICT
+    // Jana laporan aduan ICT (PDF)
     
     public function aduanPdf()
     {
+        // Data laporan PDF (tanpa pagination)
         $aduans = MaintenanceRequest::with('asset')
             ->latest()
             ->get();
 
-        return Pdf::loadView('LaporanMain.pdf.aduan', compact('aduans'))
-            ->setPaper('A4', 'landscape')
-            ->stream('Laporan_Aduan_ICT.pdf');
+        $ringkasan = [
+            'jumlah' => $aduans->count(),
+            'selesai' => $aduans->where('status', 'Selesai')->count(),
+            'dalam_proses' => $aduans->where('status', 'Dalam Proses')->count(),
+            'baru' => $aduans->where('status', 'Baru')->count(),
+        ];
+
+        return Pdf::loadView(
+            'LaporanMain.pdf.aduan',
+            compact('aduans', 'ringkasan')
+        )
+        ->setPaper('A4', 'landscape')
+        ->stream('Laporan_Aduan_ICT.pdf');
     }
 
-    // PDF LAPORAN ASET ROSAK
-     
+    // Jana laporan aset rosak (PDF)
     public function asetRosakPdf(Request $request)
-{
-    $assets = Asset::where('status', 'Rosak')->get();
+    {
+        // Data laporan PDF
+        $assets = Asset::where('status', 'Rosak')->get();
+        $jumlahRosak = $assets->count();
 
-    $jumlahRosak = $assets->count();
-
-    return Pdf::loadView(
-        'LaporanMain.pdf.aset_rosak',
-        compact('assets', 'jumlahRosak')
-    )->setPaper('A4', 'landscape')
-    ->stream('laporan-aset-rosak.pdf');
+        return Pdf::loadView(
+            'LaporanMain.pdf.aset_rosak',
+            compact('assets', 'jumlahRosak')
+        )->setPaper('A4', 'landscape')
+        ->stream('laporan-aset-rosak.pdf');
 }
-
-    
-    // PDF LAPORAN ASET MENGIKUT USIA
-     
+ 
+    // Jana laporan aset usang (PDF)
     public function asetUsangPdf(Request $request)
     {
         $tahap = (int) $request->get('tahap');
         $tahunSemasa = now()->year;
 
+        // Data laporan aset mengikut usia
         $assets = Asset::when($tahap, function ($q) use ($tahap, $tahunSemasa) {
 
             if ($tahap === 5) {
@@ -169,7 +178,7 @@ class IctReportController extends Controller
             }
         })->get();
 
-        // LOG AKTIVITI
+        // Log aktiviti cetakan laporan
         logActivity('Cetak Laporan Aset Usang');
 
         return Pdf::loadView(

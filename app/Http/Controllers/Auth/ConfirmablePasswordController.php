@@ -24,6 +24,7 @@ class ConfirmablePasswordController extends Controller
      */
     public function store(Request $request): RedirectResponse
     {
+        // Validasi semula kata laluan pengguna semasa
         if (! Auth::guard('web')->validate([
             'email' => $request->user()->email,
             'password' => $request->password,
@@ -33,8 +34,10 @@ class ConfirmablePasswordController extends Controller
             ]);
         }
 
+        // Rekod masa pengesahan kata laluan dalam session
         $request->session()->put('auth.password_confirmed_at', time());
 
+        // Redirect ke halaman asal atau dashboard
         return redirect()->intended(route('dashboard', absolute: false));
     }
 }

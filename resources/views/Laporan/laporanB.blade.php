@@ -1,9 +1,10 @@
-{{-- resources/views/laporan/laporanB.blade.php --}}
-<!DOCTYPE html>
-<html>
+{{-- LAPORAN ASET ICT – BAHAGIAN B (PDF) --}}
+
 <head>
     <meta charset="utf-8">
     <title>Laporan Aset ICT – Bahagian B</title>
+
+    {{-- Basic untuk cetakan PDF --}}
     <style>
         body { font-family: DejaVu Sans, sans-serif; font-size: 10px; }
         table { border-collapse: collapse; width: 100%; }
@@ -13,11 +14,13 @@
 </head>
 <body>
 
+    {{-- Tajuk laporan naik taraf / komponen aset --}}
     <h3 style="text-align:center; margin-bottom:10px;">
         BUTIR-BUTIR ASAL / PENAMBAHAN / NAIK TARAF / PENGGANTIAN<br>
         BAHAGIAN B – ASET: {{ $asset->jenama }} {{ $asset->model }} ({{ $asset->no_siri }})
     </h3>
 
+    {{-- Jadual senarai komponen dan sejarah perubahan --}}
     <table>
         <tr>
             <th>Bil.</th>
@@ -33,6 +36,7 @@
             <th>Nama Pegawai</th>
         </tr>
 
+        {{-- Papar rekod komponen jika wujud --}}
         @forelse ($komponen as $index => $row)
             <tr>
                 <td style="text-align:center;">{{ $index + 1 }}</td>
@@ -47,6 +51,8 @@
                 <td>{{ $row->catatan }}</td>
                 <td>{{ $row->nama_pegawai }}</td>
             </tr>
+        
+        {{-- Papar mesej jika tiada rekod --}}
         @empty
             <tr>
                 <td colspan="11" style="text-align:center;">Tiada rekod komponen / naik taraf direkodkan.</td>

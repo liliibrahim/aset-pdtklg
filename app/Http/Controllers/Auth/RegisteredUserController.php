@@ -29,25 +29,17 @@ class RegisteredUserController extends Controller
      */
     public function store(Request $request)
     {
-        /*
-        |--------------------------------------------------------------------------
-        | NORMALISASI DATA
-        |--------------------------------------------------------------------------
-        */
+        // Normalisasi data input
         $request->merge([
             'name'  => strtoupper($request->name),
             'email' => strtolower($request->email),
         ]);
 
-        /*
-        |--------------------------------------------------------------------------
-        | VALIDATION
-        |--------------------------------------------------------------------------
-        */
+        // Validasi maklumat pendaftaran
         $request->validate([
             'name' => ['required', 'string', 'max:255'],
 
-            // Emel rasmi sahaja
+            // Emel rasmi sahaja dibenarkan
             'email' => [
                 'required',
                 'email',
@@ -71,22 +63,14 @@ class RegisteredUserController extends Controller
             'role' => ['nullable', 'in:admin,ict,user'],
         ]);
 
-        /*
-        |--------------------------------------------------------------------------
-        | TENTUKAN ROLE (KAWALAN UTAMA)
-        |--------------------------------------------------------------------------
-        */
+        // Tetapkan role pengguna
         $role = 'user'; // default: user daftar sendiri
 
         if (Auth::check() && Auth::user()->role === 'admin') {
             $role = $request->role ?? 'user';
         }
 
-        /*
-        |--------------------------------------------------------------------------
-        | CREATE USER
-        |--------------------------------------------------------------------------
-        */
+        // Cipta rekod pengguna baharu
         $user = User::create([
             'name'        => $request->name,
             'email'       => $request->email,
@@ -97,25 +81,10 @@ class RegisteredUserController extends Controller
             'password'    => Hash::make($request->password),
         ]);
 
-        /*
-        |--------------------------------------------------------------------------
-        | EVENT
-        |--------------------------------------------------------------------------
-        */
+        // Trigger event pendaftaran pengguna
         event(new Registered($user));
-
-        /*
-        |--------------------------------------------------------------------------
-        | LOGIN LOGIC
-        |--------------------------------------------------------------------------
-        | - User daftar sendiri → auto login
-        | - Admin daftar user → TIDAK auto login
-        |--------------------------------------------------------------------------
-        */
-        
-        
-
-        // Redirect user awam ke dashboard masing-masing
+          
+        // Redirect ke dashboard selepas pendaftaran berjaya
         return redirect()->route('dashboard')
             ->with('success', 'Pendaftaran berjaya. Selamat datang!');
             }

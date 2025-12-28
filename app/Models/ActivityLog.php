@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class ActivityLog extends Model
 {
+    // Simpan log aktiviti sistem
     protected $fillable = [
         'user_id',
         'aktiviti',
@@ -13,7 +14,7 @@ class ActivityLog extends Model
         'tindakan',
         'aset',
         'rekod',
-        'asset_id',   // optional (kalau masih guna relasi)
+        'asset_id',   
     ];
 
     public function user()

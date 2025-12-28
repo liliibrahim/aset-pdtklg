@@ -11,11 +11,16 @@ use Illuminate\Support\Facades\Auth;
 class ComplaintController extends Controller
 {
  
+    /**
+     * Papar borang aduan kerosakan bagi aset tertentu.
+     * Akses hanya dibenarkan jika aset milik bahagian dan unit pengguna.
+     */
     public function create(Asset $asset)
     {
         $user = Auth::user();
 
-              if (
+        // Kawalan akses berdasarkan bahagian dan unit
+        if (
             $asset->bahagian !== $user->bahagian->nama ||
             $asset->unit !== $user->unit->nama
         ) {
@@ -25,22 +30,22 @@ class ComplaintController extends Controller
         return view('aduan.create', compact('asset'));
     }
 
-      public function store(Request $request)
+    /**
+     * Simpan aduan kerosakan aset.
+     */
+    public function store(Request $request)
     {
-   
+        // Validasi input aduan
         $request->validate([
             'asset_id'    => 'required|exists:assets,id',
             'jenis_aduan' => 'required|string',
             'keterangan'  => 'required|string',
         ]);
 
-           $aduanSediaAda = Complaint::where('asset_id', $request->asset_id)
-            ->whereIn('status', [
-                'Dihantar',
-                'Menunggu Tindakan ICT',
-                'Dalam Tindakan',
-            ])
-            ->exists();
+        // Semak aduan sedia ada yang masih dalam tindakan
+        $aduanSediaAda = Complaint::where('asset_id', $request->asset_id)
+        ->whereIn('status', ['Baru','Dalam Tindakan',])
+        ->exists();
 
         if ($aduanSediaAda) {
             return redirect()
@@ -48,15 +53,17 @@ class ComplaintController extends Controller
                 ->with('error', 'Aduan untuk aset ini telah dibuat dan masih dalam tindakan.');
         }
 
-         $complaint = Complaint::create([
+        // Cipta rekod aduan
+        $complaint = Complaint::create([
             'asset_id'     => $request->asset_id,
             'user_id'      => Auth::id(),
             'tarikh_aduan' => now(),
             'jenis_aduan'  => $request->jenis_aduan,
             'keterangan'   => $request->keterangan,
-            'status'       => 'Menunggu Tindakan ICT',
+            'status'       => 'baru',
         ]);
 
+        // Cipta rekod permohonan penyelenggaraan
         MaintenanceRequest::create([
             'complaint_id' => $complaint->id,
             'asset_id'     => $complaint->asset_id,

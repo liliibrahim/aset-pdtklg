@@ -10,6 +10,10 @@ use Illuminate\Support\Facades\Auth;
 
 class DashboardController extends Controller
 {
+
+    /**
+     * Papar dashboard untuk Admin Sistem.
+     */
     public function admin()
     {
         return view('dashboard.admin', [
@@ -21,22 +25,20 @@ class DashboardController extends Controller
     }
 
     /**
-     * ===========================
-     * DASHBOARD ICT (LOGIK B)
-     * ===========================
+     * Papar dashboard untuk Pegawai ICT.
+     * Mengandungi statistik aset, analisis usia dan notifikasi.
      */
     public function ict()
     {
         $tahunSemasa = now()->year;
 
-        // ======================
-        // KIRAAN ASAS
-        // ======================
+        // Statistik asas aset
         $totalAset = Asset::count();
         $digunakan = Asset::where('status', 'Aktif')->count();
         $rosak     = Asset::where('status', 'Rosak')->count();
         $pelupusan = Asset::where('status', 'Untuk Dilupus')->count();
 
+        // Aset tanpa penempatan
         $tanpaPenempatan = Asset::where(function ($q) {
             $q->whereNull('bahagian')
               ->orWhereNull('unit')
@@ -44,10 +46,10 @@ class DashboardController extends Controller
               ->orWhere('unit', '');
         })->count();
 
-        // ======================
-        // LOGIK USIA ASET (B)
-        // ======================
-
+        /**
+        * ANALISIS USIA ASET
+        */
+    
         // Akan Usang: 6–7 tahun
         $lebih5 = Asset::whereYear('tarikh_perolehan', '>=', $tahunSemasa - 7)
             ->whereYear('tarikh_perolehan', '<=', $tahunSemasa - 6)
@@ -61,9 +63,7 @@ class DashboardController extends Controller
         $lebih8 = Asset::whereYear('tarikh_perolehan', '<=', $tahunSemasa - 9)
             ->count();
 
-        // ======================
-        // DATA FILTER (CHART)
-        // ======================
+        // Data sokongan carta dan filter
         $bahagianLabels = collect([
             'Pejabat Pegawai Daerah',
             'Unit Perundangan',
@@ -106,9 +106,7 @@ class DashboardController extends Controller
             ->orderBy('tahun', 'desc')
             ->pluck('tahun');
 
-        // ======================
-        // NOTIFIKASI
-        // ======================
+        // Notifikasi penyelenggaraan dan aduan
         $reminder = Maintenance::where('tarikh', '>=', now())
             ->orderBy('tarikh', 'asc')
             ->first();
@@ -138,9 +136,7 @@ class DashboardController extends Controller
     }
 
     /**
-     * ===========================
-     * FILTER CHART AJAX
-     * ===========================
+     * API penapisan data carta (AJAX).
      */
     public function filter(Request $request)
     {
@@ -165,54 +161,45 @@ class DashboardController extends Controller
     }
 
     /**
-     * ===========================
-     * DASHBOARD PENGGUNA
-     * ===========================
+     * Papar dashboard untuk pengguna biasa.
      */
     public function user()
-{
-    $user = Auth::user();
+    {
+        $user = Auth::user();
 
-    // Keselamatan: pastikan profil lengkap
-    if (
-        !$user ||
-        !$user->bahagian ||
-        !$user->unit ||
-        empty($user->bahagian->nama) ||
-        empty($user->unit->nama)
-    ) {
-        abort(403, 'Profil pengguna tidak lengkap');
+        // Pastikan profil pengguna lengkap
+        if (
+            !$user ||
+            !$user->bahagian ||
+            !$user->unit ||
+            empty($user->bahagian->nama) ||
+            empty($user->unit->nama)
+        ) {
+            abort(403, 'Profil pengguna tidak lengkap');
+        }
+
+        // Query aset di bawah tanggungjawab pengguna
+        $asetQuery = Asset::where('user_id', $user->id)
+            ->with(['complaints.maintenanceRequest']);
+
+        // Statistik (dikira di DB – lebih efisien)
+        $totalAset = (clone $asetQuery)->count();
+        $asetAktif = (clone $asetQuery)
+            ->where('status', 'Aktif')->count();
+        $asetRosak = (clone $asetQuery)
+            ->where('status', 'Rosak')->count();
+
+        $asetSaya = $asetQuery->get();
+
+        return view('dashboard.user', compact(
+            'asetSaya',
+            'totalAset',
+            'asetAktif',
+            'asetRosak'
+        ));
     }
-
-// Query aset di bawah tanggungjawab pengguna (ikut user_id)
-$asetQuery = Asset::where('user_id', $user->id)
-    ->with(['complaints.maintenanceRequest']);
-
-    // Statistik (dikira di DB – lebih efisien)
-    $totalAset = (clone $asetQuery)->count();
-
-    $asetAktif = (clone $asetQuery)
-        ->where('status', 'Aktif')
-        ->count();
-
-    $asetRosak = (clone $asetQuery)
-        ->where('status', 'Rosak')
-        ->count();
-
-    // Senarai aset
-    $asetSaya = $asetQuery->get();
-
-    return view('dashboard.user', compact(
-        'asetSaya',
-        'totalAset',
-        'asetAktif',
-        'asetRosak'
-    ));
-}
     /**
-     * ===========================
-     * API UNIT BY BAHAGIAN
-     * ===========================
+     * API mendapatkan senarai unit berdasarkan bahagian.
      */
     public function getUnitsByBahagian(Request $request)
     {

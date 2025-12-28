@@ -11,8 +11,10 @@ class Asset extends Model
 {
     use HasFactory;
 
+    // Jadual aset
     protected $table = 'assets';
 
+    // Simpan data aset
     protected $fillable = [
         // Maklumat Aset ICT
         'no_siri_aset',
@@ -54,35 +56,31 @@ class Asset extends Model
         'harga'            => 'decimal:2',
     ];
 
-    /**
-     * Relationship: Asset mempunyai banyak Rekod Movement
-     */
+    // Sejarah pergerakan aset
     public function movements()
     {
         return $this->hasMany(AssetMovement::class);
     }
 
-    /**
- * Rekod penempatan semasa (latest movement tanpa tarikh tamat)
- */
-public function currentMovement()
-{
-    return $this->hasOne(AssetMovement::class)
-                ->whereNull('tarikh_tamat')
-                ->latestOfMany('tarikh_mula'); // ambil tarikh_mula paling baru
-}
+    // Penempatan semasa aset
+    public function currentMovement()
+    {
+        return $this->hasOne(AssetMovement::class)
+                    ->whereNull('tarikh_tamat')
+                    ->latestOfMany('tarikh_mula'); // ambil tarikh_mula paling baru
+    }
 
-// app/Models/Asset.php
-public function complaints()
-{
-    return $this->hasMany(Complaint::class);
-}
+    // Aduan berkaitan aset
+    public function complaints()
+    {
+        return $this->hasMany(Complaint::class);
+    }
 
-public function getUsiaAsetAttribute()
-{
-    return $this->tarikh_perolehan
-        ? Carbon::parse($this->tarikh_perolehan)->age . ' tahun'
-        : '-';
-}
-
+    // Kira usia aset (tahun)
+    public function getUsiaAsetAttribute()
+    {
+        return $this->tarikh_perolehan
+            ? Carbon::parse($this->tarikh_perolehan)->age . ' tahun'
+            : '-';
+    }
 }

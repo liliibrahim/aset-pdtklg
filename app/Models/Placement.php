@@ -9,6 +9,7 @@ class Placement extends Model
 {
     use HasFactory;
 
+     // Simpan rekod penempatan aset
     protected $fillable = [
         'asset_id',
         'user_id',
@@ -19,21 +20,25 @@ class Placement extends Model
         'aktif',
     ];
 
+    // Aset ditempatkan
     public function asset()
     {
         return $this->belongsTo(Asset::class);
     }
 
+    // Pengguna aset
     public function user()
     {
         return $this->belongsTo(User::class);
     }
 
+    // Bahagian penempatan
     public function bahagian()
     {
         return $this->belongsTo(Bahagian::class);
     }
 
+    // Unit penempatan
     public function unit()
     {
         return $this->belongsTo(Unit::class);

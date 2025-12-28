@@ -3,6 +3,7 @@
 
         <h1 class="text-2xl font-bold mb-6">Tambah Aset ICT</h1>
 
+        {{-- Papar mesej ralat validasi --}}
         @if ($errors->any())
             <div class="bg-red-200 text-red-800 p-3 rounded mb-4">
                 <strong>Ralat!</strong>
@@ -14,6 +15,7 @@
             </div>
         @endif
 
+        {{-- Borang pendaftaran aset baharu --}}
         <form action="{{ route('ict.assets.store') }}" method="POST">
             @csrf
 
@@ -158,6 +160,7 @@
     </div>
 
     <script>
+        // Reset borang input
         document.getElementById('clearForm').addEventListener('click', function () {
             document.querySelector('form').reset();
         });

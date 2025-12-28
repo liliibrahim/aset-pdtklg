@@ -9,17 +9,17 @@ use Illuminate\Support\Facades\Auth;
 
 class MaintenanceController extends Controller
 {
-    /**
-     * Papar borang aduan
-     */
+    // Papar borang aduan kerosakan aset
     public function create(Asset $asset)
     {
         $user = Auth::user();
 
+        // Pastikan profil pengguna lengkap
         if (!$user || !$user->bahagian || !$user->unit) {
             abort(403, 'Profil pengguna tidak lengkap');
         }
 
+        // Kawalan akses berdasarkan bahagian dan unit
         if (
             $asset->bahagian !== $user->bahagian->nama ||
             $asset->unit !== $user->unit->nama
@@ -30,17 +30,17 @@ class MaintenanceController extends Controller
         return view('aduan.create', compact('asset'));
     }
 
-    /**
-     * Simpan aduan
-     */
+    // Simpan aduan kerosakan
     public function store(Request $request)
     {
+        // Validasi input aduan
         $validated = $request->validate([
             'asset_id'    => 'required|exists:assets,id',
             'jenis_aduan' => 'required|string',
             'keterangan'  => 'required|string',
         ]);
 
+        // Cipta rekod aduan
         $aduan = Maintenance::create([
             'asset_id' => $validated['asset_id'],
             'user_id'  => Auth::id(),
@@ -50,7 +50,7 @@ class MaintenanceController extends Controller
             'tarikh'   => now(),
         ]);
 
-        // ✅ LOG AKTIVITI (HANTAR ADUAN)
+        // Rekod log aktiviti
         logActivity(
             'Hantar Aduan',
             $aduan->asset_id,
@@ -61,11 +61,10 @@ class MaintenanceController extends Controller
             ->with('success', 'Aduan kerosakan berjaya dihantar.');
     }
 
-    /**
-     * Kemas kini status aduan (ICT)
-     */
+    // Kemas kini status aduan oleh ICT
     public function updateStatus(Request $request, $id)
     {
+        // Validasi status aduan
         $validated = $request->validate([
             'status' => 'required|string',
         ]);
@@ -74,7 +73,7 @@ class MaintenanceController extends Controller
         $aduan->status = $validated['status'];
         $aduan->save();
 
-        // LOG AKTIVITI (KEMASKINI ADUAN)
+        // Rekod log aktiviti
         logActivity(
             'Kemaskini Aduan',
             $aduan->asset_id,

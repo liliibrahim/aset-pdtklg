@@ -1,9 +1,10 @@
-<!DOCTYPE html>
+{{-- LAPORAN ASET USANG ICT (PDF) --}}
 <html lang="ms">
 <head>
 <meta charset="UTF-8">
 <title>Laporan Aset Usang ICT</title>
 
+{{-- Basic untuk cetakan PDF --}}
 <style>
 body { font-family: DejaVu Sans, sans-serif; font-size: 11px; }
 table { width: 100%; border-collapse: collapse; }
@@ -12,17 +13,23 @@ th { background: #f0f0f0; }
 .text-center { text-align: center; }
 </style>
 </head>
+
 <body>
 
+{{-- Tajuk laporan --}}
 <h3 style="text-align:center;margin-bottom:5px;">
 PEJABAT DAERAH DAN TANAH KLANG
 </h3>
+
 <p style="text-align:center;margin-top:0;">
 <strong>LAPORAN ASET USANG ICT</strong>
 </p>
 
+{{-- Maklumat ringkas laporan --}}
 <p>
 Tarikh Cetakan: {{ now()->format('d/m/Y') }}<br>
+
+{{-- Kriteria filter umur aset --}}
 Kriteria:
 @if(request('tahap') == 5)
 Aset 5–6 Tahun
@@ -34,9 +41,12 @@ Aset ≥ 8 Tahun
 Semua Aset ≥ 5 Tahun
 @endif
 <br>
+
+{{-- Jumlah rekod dipaparkan --}}
 Jumlah Rekod: {{ $assets->count() }}
 </p>
 
+{{-- Jumlah rekod dipaparkan --}}
 <table>
 <thead>
 <tr>
@@ -52,6 +62,8 @@ Jumlah Rekod: {{ $assets->count() }}
 </tr>
 </thead>
 <tbody>
+
+{{-- Papar senarai aset mengikut kriteria umur --}}
 @forelse($assets as $i => $a)
 <tr>
     <td class="text-center">{{ $i+1 }}</td>
@@ -59,9 +71,13 @@ Jumlah Rekod: {{ $assets->count() }}
     <td>{{ $a->jenama }}</td>
     <td>{{ $a->model }}</td>
     <td>{{ $a->no_siri }}</td>
+
+    {{-- Tarikh perolehan aset --}}
     <td class="text-center">
         {{ \Carbon\Carbon::parse($a->tarikh_perolehan)->format('d/m/Y') }}
     </td>
+
+    {{-- Pengiraan umur aset --}}
     <td class="text-center">
         {{ \Carbon\Carbon::parse($a->tarikh_perolehan)->diffInYears(now()) }}
     </td>
@@ -76,6 +92,7 @@ Jumlah Rekod: {{ $assets->count() }}
 </tbody>
 </table>
 
+{{-- Nota sistem --}}
 <p style="font-size:10px;margin-top:15px;text-align:center;">
 Dokumen ini dijana secara automatik oleh Sistem Pemantauan Aset ICT.
 </p>

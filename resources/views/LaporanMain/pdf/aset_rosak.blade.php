@@ -1,7 +1,8 @@
-<!DOCTYPE html>
-<html>
+{{-- LAPORAN ASET ROSAK (PDF) --}}
 <head>
     <meta charset="utf-8">
+
+    {{-- Basic untuk cetakan PDF --}}
     <style>
         body { font-family: DejaVu Sans; font-size: 11px; }
         table { width: 100%; border-collapse: collapse; }
@@ -11,9 +12,13 @@
 </head>
 <body>
 
+{{-- Tajuk laporan --}}
 <h3>Laporan Aset Rosak</h3>
+
+{{-- Ringkasan jumlah aset rosak --}}
 <p>Jumlah Aset Rosak: {{ $jumlahRosak }}</p>
 
+{{-- Jadual senarai aset rosak --}}
 <table>
     <thead>
         <tr>

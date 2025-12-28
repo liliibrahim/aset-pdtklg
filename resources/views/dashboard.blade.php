@@ -1,11 +1,12 @@
 <x-app-layout>
     <div class="px-6 py-6">
 
+        {{-- Tajuk dashboard pegawai ICT --}}
         <h1 class="text-2xl font-bold text-gray-800 mb-6">
             Dashboard — Pegawai ICT
         </h1>
 
-    {{-- AI INSIGHT BOX --}}
+        {{-- Paparan insight automatik sistem --}} 
         <div class="bg-gradient-to-r from-indigo-600 to-purple-600 text-white p-6 rounded-xl shadow mb-6">
             <h2 class="text-xl font-semibold mb-2">🔍 Insight Sistem</h2>
             <p class="text-sm opacity-90">
@@ -17,30 +18,35 @@
             </p>
         </div>
 
-        {{-- STATISTIK RINGKAS --}}
+        {{-- Statistik ringkas aset --}}
         <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
+
+            {{-- Jumlah keseluruhan aset --}}
             <div class="bg-white p-6 shadow rounded-xl">
                 <h3 class="text-sm text-gray-500">JUMLAH KESELURUHAN</h3>
                 <p class="text-3xl font-bold mt-2 text-blue-700">{{ $totalAset }}</p>
             </div>
 
+            {{-- Aset aktif digunakan --}}
             <div class="bg-white p-6 shadow rounded-xl">
                 <h3 class="text-sm text-gray-500">AKTIF DIGUNAKAN</h3>
                 <p class="text-3xl font-bold mt-2 text-green-600">{{ $digunakan }}</p>
             </div>
 
+            {{-- Aset rosak --}}
             <div class="bg-white p-6 shadow rounded-xl">
-                <h3 class="text-sm text-gray-500">ROSak</h3>
+                <h3 class="text-sm text-gray-500">ROSAK</h3>
                 <p class="text-3xl font-bold mt-2 text-red-600">{{ $rosak }}</p>
             </div>
 
+            {{-- Aset tanpa penempatan --}}
             <div class="bg-white p-6 shadow rounded-xl">
                 <h3 class="text-sm text-gray-500">TANPA PENEMPATAN</h3>
                 <p class="text-3xl font-bold mt-2 text-orange-600">{{ $tanpaPenempatan }}</p>
             </div>
         </div>
 
-        {{-- LEADERBOARD UMUR ASET --}}
+        {{-- Ringkasan umur aset untuk perancangan gantian --}}
         <div class="bg-white p-6 shadow rounded-xl mb-6">
             <h2 class="font-bold text-lg mb-4">⏳ Umur Aset (Predictive Replacement)</h2>
 
@@ -62,29 +68,32 @@
             </div>
         </div>
 
-        {{-- GRAF STATUS ASET --}}
+        {{-- Graf status aset --}}
         <div class="bg-white p-6 shadow rounded-xl mb-6">
             <h2 class="font-bold text-lg mb-4">📊 Status Aset</h2>
             <canvas id="statusChart"></canvas>
         </div>
 
-        {{-- GRAF BAHAGIAN --}}
+        {{-- Graf bilangan aset mengikut bahagian --}}
         <div class="bg-white p-6 shadow rounded-xl mb-6">
             <h2 class="font-bold text-lg mb-4">🏢 Aset Mengikut Bahagian</h2>
             <canvas id="bahagianChart"></canvas>
         </div>
 
-        {{-- GRAF TAHUN PEROLEHAN --}}
+        {{-- Graf aset mengikut tahun perolehan --}}
         <div class="bg-white p-6 shadow rounded-xl mb-6">
             <h2 class="font-bold text-lg mb-4">📅 Mengikut Tahun Perolehan</h2>
             <canvas id="tahunChart"></canvas>
         </div>
 
-        {{-- SENARAI ASET TERKINI --}}
+        {{-- Senarai aset ICT terkini --}}
         <div class="bg-white p-6 shadow rounded-xl">
             <h2 class="font-bold text-lg mb-4">Senarai Aset ICT Terkini</h2>
 
+            {{-- Semak jika terdapat rekod aset --}}
             @if ($senaraiAset->count() > 0)
+
+                {{-- Paparan jadual aset --}}
                 <table class="table-auto w-full text-sm">
                     <thead class="border-b font-semibold bg-gray-50">
                         <tr>
@@ -114,6 +123,7 @@
                     </tbody>
                 </table>
 
+            {{-- Jika tiada rekod aset --}}
             @else
                 <p class="text-gray-500">Tiada aset direkodkan.</p>
             @endif
@@ -123,18 +133,7 @@
 
 
 <script>
-    // Pie Chart
-    new Chart(document.getElementById('statusChart'), {
-        type: 'pie',
-        data: {
-            labels: ['Aktif', 'Rosak', 'Pelupusan'],
-            datasets: [{
-                data: [{{ $digunakan }}, {{ $rosak }}, {{ $pelupusan }}],
-                backgroundColor: ['#1e90ff','#ff4d4d','#ffaa00']
-            }]
-        }
-    });
-
+    
     // Bar Chart Bahagian
     new Chart(document.getElementById('bahagianChart'), {
         type: 'bar',

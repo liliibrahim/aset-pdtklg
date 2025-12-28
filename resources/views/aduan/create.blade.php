@@ -1,16 +1,19 @@
 <x-app-layout>
     <div class="max-w-xl mx-auto py-6">
-
+        
+        {{-- Tajuk halaman --}}
         <h2 class="text-xl font-bold mb-4">Aduan Kerosakan Aset</h2>
 
+        {{-- Borang aduan kerosakan --}}
         <form id="form-aduan"
               method="POST"
               action="{{ route('user.aduan.store') }}">
             @csrf
 
+            {{-- ID aset --}}
             <input type="hidden" name="asset_id" value="{{ $asset->id }}">
 
-            {{-- MAKLUMAT ASET (READ ONLY) --}}
+            {{-- Maklumat aset (paparan sahaja) --}}
             <div class="mb-4 p-4 border rounded bg-gray-50">
                 <h3 class="font-semibold mb-3 text-gray-700">
                     Maklumat Aset Dilaporkan
@@ -47,7 +50,7 @@
                 </div>
             </div>
 
-            {{-- JENIS ADUAN --}}
+            {{-- Pilih jenis aduan --}}
             <div class="mb-3">
                 <label class="text-sm font-medium">Jenis Aduan</label>
                 <select name="jenis_aduan"
@@ -60,7 +63,7 @@
                 </select>
             </div>
 
-            {{-- KETERANGAN --}}
+            {{-- Keterangan aduan --}}
             <div class="mb-4">
                 <label class="text-sm font-medium">Keterangan Aduan</label>
                 <textarea name="keterangan"
@@ -70,7 +73,7 @@
                           required></textarea>
             </div>
 
-            {{-- BUTTON --}}
+            {{-- Hantar aduan --}}
             <button type="button"
                     id="btn-hantar-aduan"
                     class="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700 disabled:opacity-60">
@@ -80,7 +83,7 @@
         </form>
     </div>
 
-    {{-- SWEETALERT --}}
+    {{-- SweetAlert --}}
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     <script>
@@ -91,6 +94,7 @@
 
             btnHantar.addEventListener('click', function () {
 
+                // Sahkan aduan
                 Swal.fire({
                     title: 'Sahkan Aduan Kerosakan',
                     text: 'Adakah anda pasti ingin menghantar aduan bagi aset ini?',
@@ -102,14 +106,14 @@
 
                     if (result.isConfirmed) {
 
-                        // 🔒 Elak double submit
+                        // Elak hantar dua kali
                         btnHantar.disabled = true;
                         btnHantar.innerText = 'Sedang dihantar...';
 
-                        // 📤 Submit borang
+                        // Hantar borang
                         formAduan.submit();
 
-                        // 🔁 Paksa redirect ke dashboard (UX jelas & stabil)
+                        // Kembali ke dashboard
                         setTimeout(() => {
                             window.location.href = "{{ route('user.dashboard') }}";
                         }, 800);

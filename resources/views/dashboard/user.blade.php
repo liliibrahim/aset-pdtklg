@@ -5,7 +5,7 @@
         Dashboard — Pengguna
     </h1>
 
-    {{-- RINGKASAN --}}
+    {{-- Ringkasan status aset milik pengguna --}}
     <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
         <div class="bg-white p-5 rounded-xl shadow border">
             <p class="text-sm text-gray-500">Jumlah Aset</p>
@@ -23,7 +23,7 @@
         </div>
     </div>
 
-    {{-- SENARAI ASET --}}
+    {{-- Senarai aset di bawah tanggungjawab pengguna --}}
     <div class="bg-white rounded-xl shadow overflow-hidden">
         <div class="px-4 py-3 border-b">
             <h2 class="text-sm font-semibold text-gray-600 uppercase">
@@ -58,6 +58,7 @@
                     {{-- STATUS --}}
                     <td class="px-3 py-2">
                         @php
+                            // Ambil aduan TERKINI bagi aset ini
                             $aduan = $a->complaints
                                 ->sortByDesc('created_at')
                                 ->first();
@@ -98,46 +99,48 @@
                     {{-- LAPORAN KEROSAKAN --}}
                     <td class="px-3 py-2 text-center align-top">
                         @php
-                            // GUNA ADUAN TERKINI YANG SAMA
+                            // Rujuk tindakan ICT daripada aduan terkini
                             $request = optional($aduan)->maintenanceRequest;
                         @endphp
 
                         @if(!$aduan)
+                            {{-- Benarkan pengguna cipta aduan baharu --}}
                             <a href="{{ route('user.aduan.create', $a->id) }}"
                                class="px-3 py-1 text-xs text-white bg-blue-600 rounded hover:bg-blue-700">
                                 Lapor Kerosakan
                             </a>
                         @else
-                            @if($aduan->status === 'Menunggu Tindakan ICT')
-                                <span class="inline-block px-2 py-1 text-xs rounded bg-blue-100 text-blue-700">
-                                    Baru
-                                </span>
-                            @elseif($aduan->status === 'Dalam Tindakan')
-                                <span class="inline-block px-2 py-1 text-xs rounded bg-yellow-100 text-yellow-700">
-                                    Dalam Tindakan
-                                </span>
-                            @else
-                                <span class="inline-block px-2 py-1 text-xs rounded bg-green-100 text-green-700">
-                                    Selesai
-                                </span>
-                            @endif
-
-                            @if($request && $request->tindakan_ict)
-                                <div class="text-xs text-gray-500 mt-1">
-                                    {{ ucwords(str_replace('_',' ', $request->tindakan_ict)) }}
-                                </div>
-                            @endif
+                        {{-- Papar status aduan semasa --}}
+                        @if($aduan->status === 'Menunggu Tindakan ICT')
+                            <span class="inline-block px-2 py-1 text-xs rounded bg-blue-100 text-blue-700">
+                                Baru
+                            </span>
+                        @elseif($aduan->status === 'Dalam Tindakan')
+                            <span class="inline-block px-2 py-1 text-xs rounded bg-yellow-100 text-yellow-700">
+                                Dalam Tindakan
+                            </span>
+                        @else
+                            <span class="inline-block px-2 py-1 text-xs rounded bg-green-100 text-green-700">
+                                Selesai
+                            </span>
                         @endif
-                    </td>
-                </tr>
-                @empty
-                <tr>
-                    <td colspan="8" class="text-center py-6 text-gray-500">
-                        Tiada aset direkodkan di bawah tanggungjawab anda.
-                    </td>
-                </tr>
-                @endforelse
-            </tbody>
+
+                        @if($request && $request->tindakan_ict)
+                            <div class="text-xs text-gray-500 mt-1">
+                                {{ ucwords(str_replace('_',' ', $request->tindakan_ict)) }}
+                            </div>
+                        @endif
+                    @endif
+                </td>
+            </tr>
+            @empty
+            <tr>
+                <td colspan="8" class="text-center py-6 text-gray-500">
+                    Tiada aset direkodkan di bawah tanggungjawab anda.
+                </td>
+            </tr>
+            @endforelse
+        </tbody>
         </table>
     </div>
 

@@ -15,6 +15,7 @@ class AdminDashboardController extends Controller
         $this->middleware(['auth', 'role:admin']);
     }
 
+    // Paparkan dashboard pentadbir sistem.
     public function index()
     {
         return view('dashboard.admin', [

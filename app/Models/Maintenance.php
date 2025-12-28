@@ -9,6 +9,7 @@ class Maintenance extends Model
 {
     use HasFactory;
 
+    // Simpan rekod penyelenggaraan aset
     protected $fillable = [
         'asset_id',
         'tarikh',
@@ -18,11 +19,13 @@ class Maintenance extends Model
         'pembekal_id'
     ];
 
+    // Penyelenggaraan berkaitan aset
     public function asset()
     {
         return $this->belongsTo(Asset::class);
     }
 
+    // Pembekal yang melaksanakan kerja
     public function pembekal()
     {
         return $this->belongsTo(Supplier::class, 'pembekal_id');

@@ -2,7 +2,7 @@
 
 <div class="px-6 py-6">
 
-    {{-- TAJUK --}}
+    {{-- Tajuk Halaman --}}
     <h1 class="text-lg font-bold text-gray-800 mb-6">
         DASHBOARD – PEGAWAI ICT
     </h1>
@@ -12,7 +12,7 @@
         {{-- ================= LEFT ================= --}}
         <div class="col-span-9">
 
-            {{-- STATISTIK --}}
+            {{-- Statistik ringkas status aset --}}
             <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
 
                 <div class="bg-white p-5 shadow rounded-xl">
@@ -37,13 +37,14 @@
 
             </div>
 
-            {{-- FILTER + CHART --}}
+            {{-- Analisis aset berdasarkan filter --}}
             <div class="bg-white p-6 shadow rounded-xl">
 
                 <h2 class="font-bold text-lg mb-2">
                     📊 Analisis Aset Berdasarkan Filter
                 </h2>
 
+                {{-- data carta --}} 
                 <div class="grid grid-cols-1 md:grid-cols-6 gap-4 mb-6">
                     <div>
                         <label class="text-xs font-semibold">Bahagian</label>
@@ -103,6 +104,7 @@
                     </div>
                 </div>
 
+                {{-- Carta analisis aset --}}
                 <canvas id="mainChart" height="120"></canvas>
             </div>
         </div>
@@ -111,7 +113,7 @@
         <div class="col-span-3 flex">
             <div class="bg-white p-6 rounded-xl shadow w-full flex flex-col">
 
-                {{-- INSIGHT --}}
+                {{-- Insight automatik berdasarkan umur aset --}}
                 <div class="mb-4 p-4 rounded-lg border border-indigo-700
                             bg-gradient-to-r from-indigo-600 to-purple-600 text-white">
                     <h3 class="text-sm font-semibold mb-1">🔍 Insight Sistem</h3>
@@ -135,47 +137,47 @@
                     </p>
                 </div>
 
+                {{-- Navigasi predictive replacement --}}
                 <div class="space-y-8 mb-12">
 
-    {{-- AKAN USANG --}}
-    <a href="{{ route('ict.assets.index', ['usia' => 5]) }}" class="block">
-    <div class="flex justify-between items-center bg-yellow-200 hover:bg-yellow-300 rounded-xl px-5 py-5 mb-4">
-        <div class="text-sm font-semibold">
-            Akan Usang<br>
-            <span class="text-xs text-gray-600">(6–7 tahun)</span>
-        </div>
-        <div class="bg-white text-yellow-700 w-14 h-14 flex items-center justify-center rounded-lg font-bold">
-            {{ $lebih5 }}
-        </div>
-    </div>
-</a>
+                {{-- AKAN USANG --}}
+                <a href="{{ route('ict.assets.index', ['usia' => 5]) }}" class="block">
+                <div class="flex justify-between items-center bg-yellow-200 hover:bg-yellow-300 rounded-xl px-5 py-5 mb-4">
+                    <div class="text-sm font-semibold">
+                        Akan Usang<br>
+                        <span class="text-xs text-gray-600">(6–7 tahun)</span>
+                    </div>
+                    <div class="bg-white text-yellow-700 w-14 h-14 flex items-center justify-center rounded-lg font-bold">
+                        {{ $lebih5 }}
+                    </div>
+                </div>
+            </a>
 
+                {{-- WAJAR DINILAI --}}
+                <a href="{{ route('ict.assets.index', ['usia' => 7]) }}" class="block">
+                <div class="flex justify-between items-center bg-orange-200 hover:bg-orange-300 rounded-xl px-5 py-5 mb-4">
+                    <div class="text-sm font-semibold">
+                        Wajar Dinilai Pelupusan<br>
+                        <span class="text-xs text-gray-600">(8 tahun)</span>
+                    </div>
+                    <div class="bg-white text-orange-700 w-14 h-14 flex items-center justify-center rounded-lg font-bold">
+                        {{ $lebih7 }}
+                    </div>
+                </div>
+            </a>
 
-    {{-- WAJAR DINILAI --}}
-    <a href="{{ route('ict.assets.index', ['usia' => 7]) }}" class="block">
-    <div class="flex justify-between items-center bg-orange-200 hover:bg-orange-300 rounded-xl px-5 py-5 mb-4">
-        <div class="text-sm font-semibold">
-            Wajar Dinilai Pelupusan<br>
-            <span class="text-xs text-gray-600">(8 tahun)</span>
-        </div>
-        <div class="bg-white text-orange-700 w-14 h-14 flex items-center justify-center rounded-lg font-bold">
-            {{ $lebih7 }}
-        </div>
-    </div>
-</a>
-
-    {{-- DISYORKAN GANTI --}}
-    <a href="{{ route('ict.assets.index', ['usia' => 8]) }}" class="block">
-    <div class="flex justify-between items-center bg-red-200 hover:bg-red-300 rounded-xl px-5 py-5">
-        <div class="text-sm font-semibold">
-            Disyorkan Ganti Tahun Ini<br>
-            <span class="text-xs text-gray-600">(≥ 9 tahun)</span>
-        </div>
-        <div class="bg-white text-red-700 w-14 h-14 flex items-center justify-center rounded-lg font-bold">
-            {{ $lebih8 }}
-        </div>
-    </div>
-</a>
+                {{-- DISYORKAN GANTI --}}
+                <a href="{{ route('ict.assets.index', ['usia' => 8]) }}" class="block">
+                <div class="flex justify-between items-center bg-red-200 hover:bg-red-300 rounded-xl px-5 py-5">
+                    <div class="text-sm font-semibold">
+                        Disyorkan Ganti Tahun Ini<br>
+                        <span class="text-xs text-gray-600">(≥ 9 tahun)</span>
+                    </div>
+                    <div class="bg-white text-red-700 w-14 h-14 flex items-center justify-center rounded-lg font-bold">
+                        {{ $lebih8 }}
+                    </div>
+                </div>
+            </a>
 
 </div>
             </div>
@@ -183,13 +185,14 @@
     </div>
 </div>
 
-{{-- ================= SCRIPTS ================= --}}
+{{-- Chart.js--}}
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <script>
 document.addEventListener('DOMContentLoaded', function () {
 
+    // Inisialisasi carta utama
     let ctx = document.getElementById('mainChart').getContext('2d');
 
     let mainChart = new Chart(ctx, {
@@ -208,6 +211,7 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     });
 
+    // Kemaskini carta berdasarkan filter
     function updateMainChart() {
 
         let params = {
@@ -228,10 +232,12 @@ document.addEventListener('DOMContentLoaded', function () {
             });
     }
 
+    // Trigger kemaskini carta apabila filter berubah
     document.querySelectorAll("select").forEach(sel => {
         sel.addEventListener("change", updateMainChart);
     });
 
+    // Papar data awal
     updateMainChart();
 });
 </script>
@@ -242,6 +248,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const filterBahagian = document.getElementById('filterBahagian');
     const filterUnit = document.getElementById('filterUnit');
 
+    // Dropdown unit bergantung kepada bahagian
     filterBahagian.addEventListener('change', function () {
 
         filterUnit.innerHTML = '<option value="">Semua Unit</option>';

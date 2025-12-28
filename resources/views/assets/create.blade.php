@@ -1,17 +1,20 @@
 <x-app-layout>
     <div class="px-6 py-6">
 
+        {{-- Tajuk halaman --}}
         <div class="flex items-center justify-between mb-6">
             <h1 class="text-2xl font-bold text-gray-800">
                 Tambah Aset ICT
             </h1>
 
+            {{-- Kembali ke senarai aset --}}
             <a href="{{ route('ict.assets.index') }}"
                class="px-4 py-2 text-sm rounded-lg border border-gray-300 bg-white hover:bg-gray-50">
                 ← Kembali
             </a>
         </div>
-        {{-- PAPAR ERROR --}}
+
+        {{-- Papar ralat validasi --}}
         @if ($errors->any())
             <div class="bg-red-100 text-red-700 px-4 py-3 rounded mb-4">
                 <ul class="list-disc ms-6 text-sm">
@@ -22,12 +25,11 @@
             </div>
         @endif
 
+        {{-- Borang tambah aset --}}
         <form id="formCreateAset" action="{{ route('ict.assets.store') }}" method="POST">
             @csrf
 
-            {{-- ================================================================= --}}
-            {{--                        MAKLUMAT ASET ICT                        --}}
-            {{-- ================================================================= --}}
+            {{-- Maklumat aset --}}
             <div class="bg-white p-6 rounded-xl shadow mb-8">
                 <h2 class="font-bold text-lg mb-4">Maklumat Aset ICT</h2>
 
@@ -139,15 +141,13 @@
                 </div>
             </div>
 
-            {{-- ================================================================= --}}
-            {{--                        MAKLUMAT PEROLEHAN                        --}}
-            {{-- ================================================================= --}}
+            {{-- Maklumat perolehan --}}
             <div class="bg-white p-6 rounded-xl shadow mb-8">
                 <h2 class="font-bold text-lg mb-4">Maklumat Perolehan</h2>
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
 
-                    {{-- TARIKH PEROLEHAN: FULL DATE --}}
+                    {{-- Tarikh --}}
                     <div>
                         <label class="font-semibold text-sm">Tarikh Perolehan *</label>
                         <input type="date" id="tarikh_perolehan" name="tarikh_perolehan" required
@@ -155,7 +155,7 @@
                             value="{{ old('tarikh_perolehan') }}">
                     </div>
 
-                    {{-- USIA ASET AUTO --}}
+                    {{-- usia --}}
                     <div>
                         <label class="font-semibold text-sm">Usia Aset (Auto)</label>
                         <input type="text" id="usia_aset" readonly
@@ -207,9 +207,7 @@
                 </div>
             </div>
 
-            {{-- ================================================================= --}}
-            {{--                       MAKLUMAT PENEMPATAN                       --}}
-            {{-- ================================================================= --}}
+            {{-- Maklumat penempatan --}}
             <div class="bg-white p-6 rounded-xl shadow mb-8">
                 <h2 class="font-bold text-lg mb-4">Maklumat Penempatan</h2>
 
@@ -277,9 +275,8 @@
                 </div>
             </div>
                     </div>
-            {{-- ================================================================= --}}
-            {{--                            CATATAN                               --}}
-            {{-- ================================================================= --}}
+
+            {{-- Catatan --}}
             <div class="bg-white p-6 rounded-xl shadow mb-8">
                 <h2 class="font-bold text-lg mb-4">Catatan</h2>
 
@@ -287,7 +284,7 @@
                     class="w-full border rounded px-3 py-2">{{ old('catatan') }}</textarea>
             </div>
 
-            {{-- BUTTON --}}
+            {{-- Butang tindakan --}}
             <div class="flex justify-end gap-4 mt-6">
                 <button type="button" onclick="document.getElementById('formCreateAset').reset();"
                     class="px-4 py-2 bg-gray-300 hover:bg-gray-400 text-black rounded">
@@ -303,9 +300,10 @@
         </form>
     </div>
 
-    {{-- SCRIPT: AUTO UNIT + AUTO USIA FULL --}}
+    {{-- Skrip automasi borang --}}
     <script>
-        // AUTO KIRA USIA MENGIKUT TARIKH PENUH
+
+        // Kira usia aset automatik
         const tarikhInput = document.getElementById('tarikh_perolehan');
         const usiaField = document.getElementById('usia_aset');
 
@@ -335,7 +333,7 @@
             usiaField.value = `${tahun} tahun ${bulan} bulan ${hari} hari`;
         });
 
-        // AUTO UNIT DROPDOWN
+        // Papar unit ikut bahagian
         const unitList = {
             "Bahagian Khidmat Pengurusan": [
                 "Unit Pentadbiran Am",

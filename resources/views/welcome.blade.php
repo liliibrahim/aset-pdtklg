@@ -1,13 +1,12 @@
-<!DOCTYPE html>
-<html lang="ms">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Sistem Pemantauan Aset ICT — PDT Klang</title>
 
-    {{-- Vite --}}
+    {{-- Muatkan aset CSS & JS melalui Vite --}}
     @vite(['resources/css/app.css','resources/js/app.js'])
 
+    {{-- Tetapan warna tema rasmi --}}
     <style>
         :root {
             --pdt-blue: #0B3B7C;
@@ -41,7 +40,7 @@
             height: 42px;
         }
 
-        /* HERO WRAPPER */
+        /* Seksyen hero */
         .hero {
             max-width: 1200px;
             margin: auto;
@@ -121,13 +120,14 @@
             </div>
         </div>
 
-        {{-- Right Side: Email + Logout (only if logged in) --}}
+        {{-- Maklumat emel & log keluar (jika log masuk) --}}
         <div style="display:flex; align-items:center; gap:15px;">
             
             <a href="mailto:pdtklang@selangor.gov.my" style="color:white; text-decoration:none;">
                 pdtklang@selangor.gov.my
             </a>
 
+            {{-- Papar butang log keluar untuk pengguna sah --}}
             @auth
                 <form method="POST" action="{{ route('logout') }}">
                     @csrf
@@ -149,7 +149,7 @@
         </div>
     </div>
 
-    {{-- FLASH MESSAGE: SUCCESS --}}
+    {{-- Paparan mesej berjaya --}}
 @if (session('success'))
     <div style="
         max-width: 1200px;
@@ -166,10 +166,10 @@
     </div>
 @endif
 
-    {{-- HERO SECTION --}}
+    {{-- Seksyen utama (hero) --}}
     <section class="hero">
 
-        {{-- TEKS --}}
+        {{-- Penerangan sistem --}}
         <div class="hero-text">
             <h1 class="hero-title">
                 Sistem Pemantauan Aset ICT<br>
@@ -178,12 +178,13 @@
 
             <p class="hero-desc">
                 Platform untuk mengurus inventori, penempatan, penyelenggaraan
-                dan pelupusan aset ICT di PDT Klang.
+                aset ICT di PDT Klang.
             </p>
 
+            {{-- Tindakan pengguna --}}
             <div class="hero-buttons">
 
-                {{-- USER BELUM LOGIN --}}
+            {{-- Papar pilihan log masuk & daftar untuk tetamu --}}
             @guest
                 <a href="{{ route('login') }}" class="btn-primary">Log Masuk</a>
 
@@ -201,6 +202,7 @@
                 </a>
             @endguest
             
+{{-- Nota pendaftaran --}}         
 @guest
     <div class="mt-3 text-xs text-gray-500">
     Belum mempunyai akaun? Sila daftar.

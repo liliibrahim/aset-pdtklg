@@ -8,13 +8,11 @@ use Illuminate\Http\Request;
 class LaporanController extends Controller
 {
     /**
-     * ============================
-     * LAPORAN ADUAN
-     * ============================
+     * Paparan laporan aduan (screen)
      */
     public function aduan()
     {
-        // Ringkasan aduan
+        // Ringkasan statistik aduan
         $ringkasan = [
             'jumlah' => MaintenanceRequest::count(),
             'baru' => MaintenanceRequest::where('status', 'baru')->count(),
@@ -22,7 +20,7 @@ class LaporanController extends Controller
             'selesai' => MaintenanceRequest::where('status', 'selesai')->count(),
         ];
 
-        // Senarai aduan
+        // Senarai aduan dengan pagination
         $aduans = MaintenanceRequest::latest()->paginate(10);
 
         return view('LaporanMain.aduan', compact(

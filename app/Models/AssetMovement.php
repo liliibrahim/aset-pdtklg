@@ -11,8 +11,10 @@ use App\Models\Asset;
  */
 class AssetMovement extends Model
 {
+    // Jadual pergerakan aset
     protected $table = 'asset_movements';
 
+    // Simpan rekod pergerakan aset
     protected $fillable = [
         'asset_id',
         'bahagian',
@@ -23,16 +25,19 @@ class AssetMovement extends Model
         'catatan',
     ];
 
+    // Format tarikh pergerakan
     protected $casts = [
         'tarikh_mula'  => 'datetime',
         'tarikh_tamat' => 'datetime',
     ];
 
+    // Aset yang terlibat
     public function asset()
     {
         return $this->belongsTo(Asset::class);
     }
 
+    // Papar tarikh mula penempatan
     public function getTarikhMulaFormattedAttribute()
     {
         return $this->tarikh_mula
@@ -40,6 +45,7 @@ class AssetMovement extends Model
             : '-';
     }
 
+    // Papar tarikh tamat penempatan
     public function getTarikhTamatFormattedAttribute()
     {
         return $this->tarikh_tamat

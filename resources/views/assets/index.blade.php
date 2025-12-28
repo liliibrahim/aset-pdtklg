@@ -1,59 +1,56 @@
 <x-app-layout>
 <div class="px-6 py-6">
 
-    {{-- TAJUK --}}
+    {{-- Tajuk halaman --}}
     <h1 class="text-2xl font-bold text-gray-800 mb-6">
         Senarai Aset ICT
     </h1>
 
-    {{-- BUTANG ATAS --}}
+    {{-- Butang tindakan tambah --}}
     <div class="flex justify-between items-center mb-4">
         <a href="{{ route('ict.assets.create') }}"
            class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
             + Tambah Aset
         </a>
 
-        {{-- CETAK LAPORAN PDF (IKUT USIA ASET) --}}
+        {{-- Cetak laporan PDF ikut usia aset --}}
         @if (!empty($usia))
             <a href="{{ route('ict.laporan.aset_usang.pdf', ['tahap' => $usia]) }}"
             target="_blank"
             rel="noopener noreferrer"
-            class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700">
-                📄 {{ $labelLaporan }}
+            class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700"> 📄 {{ $labelLaporan }}
             </a>
         @endif
     </div>
 
-    {{-- LABEL KATEGORI USIA (JIKA DATANG DARI DASHBOARD) --}}
-@if(!empty($labelKategori))
-    <div class="mb-3 text-sm font-semibold text-red-700">
-        Kategori: {{ $labelKategori }}
-    </div>
-@endif
+    {{-- Label kategori usia --}}
+    @if(!empty($labelKategori))
+        <div class="mb-3 text-sm font-semibold text-red-700">
+            Kategori: {{ $labelKategori }}
+        </div>
+    @endif
 
+    {{-- Borang filter aset --}}
     <form method="GET" class="bg-white p-4 rounded-xl shadow mb-6">
 
-    {{-- FILTER ASAS --}}
-    <div class="flex flex-wrap items-end gap-4">
+        {{-- Penapis utama --}}
+        <div class="flex flex-wrap items-end gap-4">
 
-        {{-- KATEGORI --}}
-<div>
-    <label class="text-sm text-gray-600">Kategori</label>
-    <select name="kategori"
-        class="border rounded px-3 py-1 w-52">
-        <option value="">Semua</option>
+        {{-- Kategori --}}
+        <div>
+            <label class="text-sm text-gray-600">Kategori</label>
+            <select name="kategori" class="border rounded px-3 py-1 w-52">
+                <option value="">Semua</option>
+                @foreach($kategoriList as $kategori)
+                    <option value="{{ $kategori }}"
+                        {{ request('kategori') == $kategori ? 'selected' : '' }}>
+                        {{ $kategori }}
+                    </option>
+                @endforeach
+            </select>
+        </div>
 
-        @foreach($kategoriList as $kategori)
-            <option value="{{ $kategori }}"
-                {{ request('kategori') == $kategori ? 'selected' : '' }}>
-                {{ $kategori }}
-            </option>
-        @endforeach
-
-    </select>
-</div>
-
-        {{-- BAHAGIAN --}}
+        {{-- Kategori --}}
         <div>
             <label class="text-sm text-gray-600">Bahagian</label>
             <select name="bahagian" id="bahagian"
@@ -68,7 +65,7 @@
             </select>
         </div>
 
-        {{-- UNIT (BERGANTUNG BAHAGIAN) --}}
+       {{-- Unit --}}
         <div>
             <label class="text-sm text-gray-600">Unit</label>
             <select name="unit" id="unit"
@@ -85,7 +82,7 @@
             </select>
         </div>
 
-        {{-- CARIAN TEKS --}}
+        {{-- Carian --}}
         <div>
             <label class="text-sm text-gray-600">Cari</label>
             <input type="text"
@@ -103,7 +100,7 @@
         </div>
     </div>
 
-    {{-- FILTER USIA ASET (KEKAL FUNGSI ASAL) --}}
+    {{-- Filter usia aset --}}
     <div class="mt-5 border-t pt-4">
         <label class="text-sm text-gray-600">Usia Aset</label>
         <select name="usia"
@@ -125,7 +122,7 @@
 
 </form>
 
-    {{-- TABLE --}}
+    {{-- Jadual aset --}}
     <div class="bg-white rounded-xl shadow border overflow-hidden">
         <table class="min-w-full text-sm">
             <thead class="bg-gray-100 text-gray-600 uppercase text-xs">
@@ -145,12 +142,10 @@
             </thead>
 
             <tbody class="divide-y">
-            @forelse ($assets as $a)
-                <tr class="hover:bg-gray-50">
-                    <td class="px-4 py-3 text-center text-gray-500">
-                        {{ ($assets->currentPage() - 1) * $assets->perPage() + $loop->iteration }}
-                    </td>
-
+                @forelse ($assets as $a)
+                    {{-- Rekod aset --}}
+                    <tr class="hover:bg-gray-50">
+                    <td class="px-4 py-3 text-center text-gray-500">{{ ($assets->currentPage() - 1) * $assets->perPage() + $loop->iteration }}</td>
                     <td class="px-4 py-3">{{ $a->kategori ?? '-' }}</td>
                     <td class="px-4 py-3">{{ $a->jenama ?? '-' }}</td>
                     <td class="px-4 py-3">{{ $a->model ?? '-' }}</td>
@@ -159,7 +154,8 @@
                     <td class="px-4 py-3">{{ $a->bahagian ?? '-' }}</td>
                     <td class="px-4 py-3">{{ $a->unit ?? '-' }}</td>
                     <td class="px-4 py-3">{{ $a->nama_pengguna ?? '-' }}</td>
-
+                    
+                    {{-- Status aset --}}
                     <td class="px-4 py-3">
                         @switch($a->status)
                             @case('Aktif')
@@ -180,6 +176,7 @@
                     </td>
 
                     <td class="px-4 py-3">
+                        {{-- Tindakan --}}
                         <div class="flex items-center gap-3 text-xs">
                             <a href="{{ route('ict.assets.show', $a->id) }}" class="text-blue-600 hover:underline">Lihat</a>
                             <a href="{{ route('ict.assets.edit', $a->id) }}" class="text-indigo-600 hover:underline">Edit</a>
@@ -207,14 +204,14 @@
         </table>
     </div>
 
-    {{-- PAGINATION --}}
+    {{-- Pagination --}}
     <div class="mt-4">
         {{ $assets->links() }}
     </div>
 
 </div>
 
-{{-- JS DEPENDENT DROPDOWN (KEKAL) --}}
+{{-- JS: dropdown unit ikut bahagian --}}
 <script>
 document.addEventListener('DOMContentLoaded', function () {
 
